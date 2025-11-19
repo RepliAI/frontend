@@ -3,8 +3,9 @@ import { cookies } from 'next/headers';
 export default async function TicketDetailPage({ params }: { params: { id: string } }) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('access_token')?.value;
-
-  const res = await fetch(`${process.env.BACKEND_URL}/tickets/${params.id}`, {
+  const { id } = await params;
+  
+  const res = await fetch(`${process.env.BACKEND_URL}/tickets/${id}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
     cache: 'no-store',
   });
@@ -20,11 +21,11 @@ export default async function TicketDetailPage({ params }: { params: { id: strin
       <h1 className="text-xl font-semibold">{ticket.subject}</h1>
 
       <div className="space-y-3">
-        {ticket.messages.map((m: any) => (
-          <div key={m.id} className="border p-3 rounded-lg">
-            <div className="font-medium">{m.from}</div>
-            <div className="text-sm opacity-60">{new Date(m.date).toLocaleString()}</div>
-            <p className="mt-2">{m.content}</p>
+        {ticket.messages.map((message: any) => (
+          <div key={message.id} className="border p-3 rounded-lg">
+            <div className="font-medium">{message.from}</div>
+            <div className="text-sm opacity-60">{new Date(message.date).toLocaleString()}</div>
+            <p className="mt-2">{message.content}</p>
           </div>
         ))}
       </div>
