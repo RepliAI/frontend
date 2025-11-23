@@ -1,13 +1,23 @@
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
+import { MessageBubble } from "../components/MessageBubble";
+import { Actions } from "../components/Actions";
+
+export const revalidate = 0;
 
 export default async function TicketDetailPage({ params }: { params: { id: string } }) {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('access_token')?.value;
   const { id } = await params;
-  
+
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+
+  if (!accessToken) notFound();
+
   const res = await fetch(`${process.env.BACKEND_URL}/tickets/${id}`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-    cache: 'no-store',
+    cache: "no-store",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
 
   if (!res.ok) {
@@ -17,18 +27,16 @@ export default async function TicketDetailPage({ params }: { params: { id: strin
   const ticket = await res.json();
 
   return (
-    <div className="p-6 space-y-4">
-      <h1 className="text-xl font-semibold">{ticket.subject}</h1>
+    <div className="max-w-3xl mx-auto py-10 space-y-8">
+      <h1 className="text-2xl font-semibold">{ticket.subject}</h1>
 
-      <div className="space-y-3">
-        {ticket.messages.map((message: any) => (
-          <div key={message.id} className="border p-3 rounded-lg">
-            <div className="font-medium">{message.from}</div>
-            <div className="text-sm opacity-60">{new Date(message.date).toLocaleString()}</div>
-            <p className="mt-2">{message.content}</p>
-          </div>
+      <div className="space-y-4">
+        {ticket.messages.map((m: any) => (
+          <MessageBubble key={m.id} message={m} />
         ))}
       </div>
+
+      <Actions id={id} />
     </div>
   );
 }
