@@ -9,7 +9,6 @@ export default async function TicketsPage() {
   });
 
   const tickets = await res.json();
-  console.log("🚀 ~ TicketsPage ~ tickets:", tickets)
 
   return (
     <div className="space-y-6">
