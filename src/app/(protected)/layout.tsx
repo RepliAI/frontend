@@ -1,17 +1,33 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function ProtectedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("access_token");
+import { Sidebar } from "./components/sidebard/Sidebar";
+import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
+import "@/app/globals.css";
 
-  if (!token) {
-    redirect("/login");
-  }
+function LayoutContent({ children }: { children: React.ReactNode }) {
+  const { collapsed } = useSidebar();
 
-  return <>{children}</>;
+  return (
+    <div className="flex h-screen w-full bg-gray-50">
+      <Sidebar />
+
+      <main
+        id="main-content"
+        className={`flex-1 overflow-y-auto transition-all duration-300 
+          ${collapsed ? "ml-16" : "ml-64"}
+          px-6 md:px-10 py-6     /* <-- AJOUT : padding propre */
+        `}
+      >
+        {children}
+      </main>
+    </div>
+  );
+}
+
+export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarProvider>
+      <LayoutContent>{children}</LayoutContent>
+    </SidebarProvider>
+  );
 }

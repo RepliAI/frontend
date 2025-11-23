@@ -1,36 +1,44 @@
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
-import { TicketList } from "./components/TicketList";
-
-export const revalidate = 0;
 
 export default async function TicketsPage() {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("access_token")?.value;
+  const token = (await cookies()).get("access_token")?.value;
 
-    if (!accessToken) notFound();
+  const res = await fetch(`${process.env.BACKEND_URL}/tickets`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
 
-    const res = await fetch(`${process.env.BACKEND_URL}/tickets`, {
-        cache: "no-store",
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
+  const tickets = await res.json();
 
-    if (!res.ok) {
-        return (
-            <div className="max-w-3xl mx-auto py-10">
-                <p className="text-red-600">Impossible de charger les tickets.</p>
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Vos tickets</h1>
+
+      <div className="space-y-4">
+        {tickets.map((ticket: any) => (
+          <a
+            key={ticket.id}
+            href={`/tickets/${ticket.id}`}
+            className="block bg-white shadow-sm rounded-xl p-4 border hover:bg-gray-50"
+          >
+            <div className="flex justify-between">
+              <p className="font-semibold">{ticket.subject}</p>
+
+              <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 uppercase">
+                {ticket.status}
+              </span>
             </div>
-        );
-    }
 
-    const tickets = await res.json();
+            <p className="text-xs text-gray-500 mt-1">
+              Créé le {new Date(ticket.createdAt).toLocaleString("fr-FR")}
+            </p>
 
-    return (
-        <div className="max-w-3xl mx-auto py-10 space-y-6">
-            <h1 className="text-2xl font-semibold">Vos tickets</h1>
-            <TicketList tickets={tickets} />
-        </div>
-    );
+            <p className="text-sm mt-3 text-gray-700 line-clamp-2">
+              {ticket.messages[0]?.content ?? "—"}
+            </p>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
 }
