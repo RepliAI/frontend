@@ -9,10 +9,11 @@ export const revalidate = 0;
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
+  const daysRange = 15;
 
   if (!accessToken) notFound();
 
-  const res = await fetch(`${process.env.BACKEND_URL}/stats`, {
+  const res = await fetch(`${process.env.BACKEND_URL}/stats?days=${daysRange}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
     cache: "no-store",
   });
@@ -39,7 +40,7 @@ export default async function DashboardPage() {
           <StatusPieChart stats={stats} />
         </div>
         <div className="h-80">
-          <TicketTrendChart tickets={stats.lastTickets} />
+          <TicketTrendChart tickets={stats.period.tickets} />
         </div>
       </div>
 
