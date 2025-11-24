@@ -1,15 +1,17 @@
-export default function StatsCard({
-    label,
-    value,
-  }: {
-    label: string;
-    value: string | number;
-  }) {
-    return (
-      <div className="p-6 bg-white rounded-xl shadow-sm border">
-        <p className="text-sm text-gray-500">{label}</p>
-        <p className="text-2xl font-semibold mt-1">{value}</p>
-      </div>
-    );
-  }
+export default function StatCard({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: number;
+  color: string;
+}) {
+  return (
+    <div className={`p-6 text-white rounded-xl shadow-sm ${color}`}>
+      <span className="text-sm opacity-80">{label}</span>
+      <div className="text-3xl font-semibold">{value}</div>
+    </div>
+  );
+}
   
