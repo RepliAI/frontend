@@ -12,19 +12,22 @@ import {
 
 export function TicketTrendChart({ tickets }: { tickets: any[] }) {
   const grouped = tickets.reduce((acc: any, t) => {
-    const date = new Date(t.createdAt).toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-    });
-
-    acc[date] = (acc[date] || 0) + 1;
+    const dateObj = new Date(t.createdAt);
+    const key = dateObj.toISOString().slice(0, 10);
+    acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
 
-  const data = Object.entries(grouped).map(([date, count]) => ({
-    date,
-    count,
-  }));
+  const data = Object.entries(grouped)
+    .map(([isoDate, count]) => {
+      const d = new Date(isoDate);
+      const label = d.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+      });
+      return { isoDate, label, count };
+    })
+    .sort((a, b) => (a.isoDate < b.isoDate ? -1 : a.isoDate > b.isoDate ? 1 : 0));
 
   return (
     <div className="p-6 bg-white rounded-xl border shadow-sm h-full flex flex-col">
@@ -32,32 +35,18 @@ export function TicketTrendChart({ tickets }: { tickets: any[] }) {
 
       <div className="flex-1">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{
-              top: 20,
-              right: 20,
-              left: 0,
-              bottom: 20,
-            }}
-          >
+          <LineChart data={data} margin={{ top: 16, right: 16, left: 8, bottom: 16 }}>
             <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-
-            <XAxis
-              dataKey="date"
-              tickMargin={10}
-            />
-
+            <XAxis dataKey="label" />
             <YAxis allowDecimals={false} />
-
             <Tooltip />
-
             <Line
               type="monotone"
               dataKey="count"
               stroke="#6366f1"
               strokeWidth={3}
-              dot={{ r: 5 }}
+              dot={{ r: 3 }}
+              activeDot={{ r: 5 }}
             />
           </LineChart>
         </ResponsiveContainer>

@@ -1,44 +1,53 @@
 import { cookies } from "next/headers";
+import { TicketFilters } from "./components/TicketsFilter";
+import { TicketList } from "./components/TicketList";
+import { Pagination } from "./components/Pagination";
 
-export default async function TicketsPage() {
+export const revalidate = 0;
+
+export default async function TicketsPage({ searchParams }: any) {
   const token = (await cookies()).get("access_token")?.value;
+  if (!token) return <div>Unauthorized</div>;
 
-  const res = await fetch(`${process.env.BACKEND_URL}/tickets`, {
-    headers: { Authorization: `Bearer ${token}` },
-    cache: "no-store",
-  });
+  // searchParams est une PROMISE → on attend
+  const paramsObj = await searchParams;
 
-  const tickets = await res.json();
+  const params = new URLSearchParams();
+  for (const key in paramsObj) {
+    const value = paramsObj[key];
+    if (typeof value === "string") {
+      params.append(key, value);
+    }
+  }
+
+  const query = params.toString();
+
+  const res = await fetch(
+    `${process.env.BACKEND_URL}/tickets?${query}`,
+    {
+      cache: "no-store",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
+  const data = await res.json();
+
+  const page = Number(paramsObj.page) || 1;
+  const pageSize = Number(paramsObj.pageSize) || 10;
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Vos tickets</h1>
+    <div className="space-y-6 p-6">
+      <h1 className="text-2xl font-semibold">Tickets</h1>
 
-      <div className="space-y-4">
-        {tickets.map((ticket: any) => (
-          <a
-            key={ticket.id}
-            href={`/tickets/${ticket.id}`}
-            className="block bg-white shadow-sm rounded-xl p-4 border hover:bg-gray-50"
-          >
-            <div className="flex justify-between">
-              <p className="font-semibold">{ticket.subject}</p>
+      <TicketFilters />
 
-              <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 uppercase">
-                {ticket.status}
-              </span>
-            </div>
+      <TicketList tickets={data.items} />
 
-            <p className="text-xs text-gray-500 mt-1">
-              Créé le {new Date(ticket.createdAt).toLocaleString("fr-FR")}
-            </p>
-
-            <p className="text-sm mt-3 text-gray-700 line-clamp-2">
-              {ticket.messages[0]?.content ?? "—"}
-            </p>
-          </a>
-        ))}
-      </div>
+      <Pagination 
+        total={data.total}
+        page={page}
+        pageSize={pageSize}
+      />
     </div>
   );
 }

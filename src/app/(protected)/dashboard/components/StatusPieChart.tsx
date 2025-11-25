@@ -18,17 +18,19 @@ const COLORS = {
 export function StatusPieChart({ stats }: { stats: any }) {
 
   const data = [
-    { name: "Open", value: stats.open, color: COLORS.OPEN },
-    { name: "Pending", value: stats.pending, color: COLORS.PENDING },
-    { name: "Resolved", value: stats.resolved, color: COLORS.RESOLVED },
-  ];
+    { name: "Ouverts", value: stats.open, key: "OPEN", color: COLORS.OPEN },
+    { name: "En attente", value: stats.pending, key: "PENDING", color: COLORS.PENDING },
+    { name: "Résolus", value: stats.resolved, key: "RESOLVED", color: COLORS.RESOLVED },
+  ].filter((d) => d.value > 0);
+
+  const chartKey = `${stats.open}-${stats.pending}-${stats.resolved}`;
 
   return (
-    <div className="p-6 bg-white rounded-xl border shadow-sm h-80 flex flex-col">
+    <div className="p-6 bg-white rounded-xl border shadow-sm h-full flex flex-col">
       <h2 className="text-lg font-semibold mb-4">Répartition des tickets</h2>
 
-      <div className="flex-1 min-h-0">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height="100%" key={chartKey}>
           <PieChart>
             <Pie
               dataKey="value"
@@ -41,9 +43,7 @@ export function StatusPieChart({ stats }: { stats: any }) {
                 <Cell key={index} fill={entry.color} />
               ))}
             </Pie>
-
             <Tooltip />
-
             <Legend
               verticalAlign="bottom"
               height={36}
