@@ -1,22 +1,28 @@
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
 import { StatusPieChart } from "./components/StatusPieChart";
 import { TicketTrendChart } from "./components/TicketTrendChart";
+import { PeriodSelector } from "./components/PeriodSelector";
 import StatCard from "./components/StatsCard";
 
 export const revalidate = 0;
 
-export default async function DashboardPage() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-  const daysRange = 15;
+export default async function DashboardPage({ searchParams }: any) {
+  const token = (await cookies()).get("access_token")?.value;
+  if (!token) return <div>Unauthorized</div>;
 
-  if (!accessToken) notFound();
+  const paramsObj = await searchParams;
+  const daysParam = paramsObj?.days;
+  const days = daysParam ? parseInt(daysParam, 10) || 14 : 14;
 
-  const res = await fetch(`${process.env.BACKEND_URL}/stats?days=${daysRange}`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${process.env.BACKEND_URL}/stats?days=${days}`,
+    {
+      cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   if (!res.ok) {
     return <div className="p-6">Impossible de charger les statistiques.</div>;
@@ -24,12 +30,24 @@ export default async function DashboardPage() {
 
   const stats = await res.json();
 
-  return (
-    <div className="p-10 space-y-10">
-      <h1 className="text-3xl font-semibold">Tableau de bord</h1>
+  const periodStats = stats.period?.summary || { open: 0, pending: 0, resolved: 0 };
+  const periodTickets = stats.period?.tickets || [];
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <StatCard label="Total Tickets" value={stats.total} color="bg-gray-900" />
+  return (
+    <div className="p-6 space-y-6">
+
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Tableau de bord</h1>
+          <p className="text-sm text-gray-500">
+            Vue d’ensemble de votre activité support.
+          </p>
+        </div>
+        <PeriodSelector currentDays={days} />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <StatCard label="Total Tickets" value={stats.total} color="bg-gray-900" />
         <StatCard label="Ouverts" value={stats.open} color="bg-blue-600" />
         <StatCard label="En attente" value={stats.pending} color="bg-yellow-500" />
         <StatCard label="Résolus" value={stats.resolved} color="bg-green-600" />
@@ -37,10 +55,17 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="h-80">
-          <StatusPieChart stats={stats} />
+          <StatusPieChart
+            stats={{
+              open: periodStats.open,
+              pending: periodStats.pending,
+              resolved: periodStats.resolved,
+            }}
+          />
         </div>
+
         <div className="h-80">
-          <TicketTrendChart tickets={stats.period.tickets} />
+          <TicketTrendChart tickets={periodTickets} />
         </div>
       </div>
 

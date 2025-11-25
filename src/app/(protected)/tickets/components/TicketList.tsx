@@ -1,14 +1,20 @@
-import { TicketListItem } from "./TicketsListItem";
+"use client";
+
+import { TicketCard } from "./TicketCard";
 
 export function TicketList({ tickets }: { tickets: any[] }) {
-  if (tickets.length === 0) {
-    return <p className="text-gray-500">Aucun ticket pour le moment.</p>;
+  if (!tickets || tickets.length === 0) {
+    return (
+      <div className="text-gray-500 text-center py-10">
+        Aucun ticket trouvé.
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-4">
-      {tickets.map(ticket => (
-        <TicketListItem key={ticket.id} ticket={ticket} />
+    <div className="grid grid-cols-1 gap-4">
+      {tickets.map((t) => (
+        <TicketCard key={t.id} ticket={t} />
       ))}
     </div>
   );
