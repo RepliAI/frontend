@@ -12,43 +12,52 @@ interface Props {
   message: Message;
 }
 
-export function MessageItem({ message }: Props) {
-  const from = (message.from || "").toLowerCase();
-  const isAgent = from === "agent" || from === "support";
-  const roleLabel = isAgent ? "Agent" : "Client";
+type MessageRole = "customer" | "agent" | "ai";
 
-  const time = new Date(message.date).toLocaleTimeString("fr-FR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+const messageStyles: Record<
+  MessageRole,
+  {
+    container: string;
+    label: React.ReactNode;
+  }
+> = {
+  customer: {
+    container: "self-start bg-gray-100 text-black",
+    label: "Client",
+  },
+  agent: {
+    container: "self-end bg-blue-600 text-white",
+    label: "Support",
+  },
+  ai: {
+    container:
+      "self-end bg-slate-200 text-black border border-slate-300",
+    label: (
+      <span className="flex items-center gap-1 text-xs text-slate-500">
+        <span className="px-1.5 py-0.5 bg-slate-300 rounded text-[10px]">
+          IA
+        </span>
+      </span>
+    ),
+  },
+};
 
-  const avatarClasses = isAgent
-    ? "bg-blue-600 text-white"
-    : "bg-gray-300 text-gray-800";
 
-  const cardClasses = isAgent
-    ? "border-blue-100 bg-blue-50"
-    : "border-gray-200 bg-gray-50";
+export function MessageItem({ message }: { message: { from: MessageRole; content: string; date: string } }) {
+  const style = messageStyles[message.from];
 
   return (
-    <div className="flex gap-3">
+    <div className="flex flex-col gap-1">
+      <div className="text-xs text-gray-500">{style.label}</div>
+
       <div
-        className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold ${avatarClasses}`}
+        className={`max-w-[75%] px-4 py-2 rounded-xl shadow ${style.container}`}
       >
-        {roleLabel[0]}
+        {message.content}
       </div>
 
-      <div
-        className={`flex-1 rounded-xl border px-4 py-3 text-sm space-y-1 ${cardClasses}`}
-      >
-        <div className="flex items-center justify-between gap-2">
-          <span className="font-medium">{roleLabel}</span>
-          <span className="text-xs text-gray-500">{time}</span>
-        </div>
-
-        <p className="whitespace-pre-wrap text-sm text-gray-800">
-          {message.content}
-        </p>
+      <div className="text-[10px] text-gray-400">
+        {new Date(message.date).toLocaleString("fr-FR")}
       </div>
     </div>
   );
