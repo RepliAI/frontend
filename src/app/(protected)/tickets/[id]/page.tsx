@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { Actions } from "../components/Actions";
 import { MessageTimeline } from "./components/MessageTimeline";
+import { TicketStatusActions } from "../components/TicketStatusAction";
+import { TicketStatusBadge } from "./components/TicketStatusBadge";
 
 export const revalidate = 0;
 
@@ -31,9 +33,10 @@ export default async function TicketDetailPage(props: any) {
     <div className="max-w-3xl mx-auto py-10 space-y-8">
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold">{ticket.subject}</h1>
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-          Statut : {ticket.status}
-        </span>
+        <div className="flex items-center gap-4">
+          <TicketStatusBadge initialStatus={ticket.status} />
+          <TicketStatusActions id={id} currentStatus={ticket.status} />
+        </div>
       </div>
 
       <div className="space-y-4">
