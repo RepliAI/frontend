@@ -56,9 +56,11 @@ export function MessageTimeline({ messages }: Props) {
             </div>
 
             <div className="space-y-3">
-              {group.map((m) => (
-                <MessageItem key={m.id} message={m} />
-              ))}
+            <div className="flex flex-col gap-6 mt-6">
+            {group.map((msg: any) => (
+              <MessageItem key={msg.id} message={msg} />
+            ))}
+          </div>
             </div>
           </div>
         );
