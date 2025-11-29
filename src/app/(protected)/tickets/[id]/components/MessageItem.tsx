@@ -44,18 +44,15 @@ const messageStyles: Record<
 
 
 export function MessageItem({ message }: { message: { from: MessageRole; content: string; date: string } }) {
-  const style = messageStyles[message.from];
+  const style = messageStyles[message.from.includes('@') ? "customer" : message.from];
 
   return (
     <div className="flex flex-col gap-1">
       <div className="text-xs text-gray-500">{style.label}</div>
 
-      <div
-        className={`max-w-[75%] px-4 py-2 rounded-xl shadow ${style.container}`}
-      >
+      <div className={`max-w-[75%] px-4 py-2 rounded-xl shadow ${style.container} whitespace-pre-wrap`}>
         {message.content}
       </div>
-
       <div className="text-[10px] text-gray-400">
         {new Date(message.date).toLocaleString("fr-FR")}
       </div>
