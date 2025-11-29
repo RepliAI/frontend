@@ -40,6 +40,10 @@ export function Actions({ id }: { id: string }) {
       alert("Erreur lors de la génération");
       return;
     }
+    
+    window.dispatchEvent(
+      new CustomEvent("ticket-status-changed", { detail: "PENDING" })
+    );
 
     router.refresh();
   }
