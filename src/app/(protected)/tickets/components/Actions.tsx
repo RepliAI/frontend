@@ -8,11 +8,12 @@ export function Actions({ id }: { id: string }) {
 
   const [loadingMsg, setLoadingMsg] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [textareaValue, setTextareaValue] = useState("");
 
-  async function sendMessage(formData: FormData) {
+  const sendMessage = async (formData: FormData) => {
     setLoadingMsg(true);
 
-    await fetch(`/api/tickets/${id}/messages`, {
+    const response = await fetch(`/api/tickets/${id}/messages`, {
       method: "POST",
       body: JSON.stringify({
         content: formData.get("content"),
@@ -22,12 +23,20 @@ export function Actions({ id }: { id: string }) {
       },
     });
 
+    if (!response.ok) {
+      alert("Erreur lors de l'envoi du message");
+      setLoadingMsg(false);
+      return;
+    }
+
+    setTextareaValue("");
+
     setLoadingMsg(false);
 
     router.refresh();
   }
 
-  async function generateAIReply() {
+  const generateAIReply = async () => {
     setLoading(true);
 
     const res = await fetch(`/api/tickets/${id}/generate-reply`, {
@@ -40,10 +49,8 @@ export function Actions({ id }: { id: string }) {
       alert("Erreur lors de la génération");
       return;
     }
-    
-    window.dispatchEvent(
-      new CustomEvent("ticket-status-changed", { detail: "PENDING" })
-    );
+    const data = await res.json();
+    setTextareaValue(data.reply);
 
     router.refresh();
   }
@@ -60,8 +67,10 @@ export function Actions({ id }: { id: string }) {
       >
         <textarea
           name="content"
+          value={textareaValue}
           placeholder="Votre message…"
-          className="border rounded-xl px-3 py-2 w-full"
+          className="border rounded-xl px-3 py-2 w-full h-40"
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setTextareaValue(e.target.value)}
           required
         />
         <button
@@ -72,7 +81,6 @@ export function Actions({ id }: { id: string }) {
         </button>
       </form>
 
-      {/* Génération IA */}
       <button
         onClick={generateAIReply}
         disabled={loading}
