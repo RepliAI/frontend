@@ -3,6 +3,7 @@ import { StatusPieChart } from "./components/StatusPieChart";
 import { TicketTrendChart } from "./components/TicketTrendChart";
 import { PeriodSelector } from "./components/PeriodSelector";
 import StatCard from "./components/StatsCard";
+import { GmailAlertBanner } from "./components/GmailAlertBanner";
 
 export const revalidate = 0;
 
@@ -35,7 +36,7 @@ export default async function DashboardPage({ searchParams }: any) {
 
   return (
     <div className="p-6 space-y-6">
-
+      <GmailAlertBanner />
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Tableau de bord</h1>

@@ -1,19 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LogOut, Home, Ticket, User, ChevronLeft } from "lucide-react";
-import { useSidebar } from "@/context/SidebarContext";
 import clsx from "clsx";
+import { usePathname } from "next/navigation";
+import { LogOut, Home, Ticket, User, ChevronLeft, Mail, Settings } from "lucide-react";
+
+import { useSidebar } from "@/context/SidebarContext";
+import { useGmailStatus } from "@/app/hooks/useGmailStatus";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { collapsed, toggle } = useSidebar();
+  const { loading, connected } = useGmailStatus();
 
   const nav = [
     { label: "Tableau de bord", href: "/dashboard", icon: Home },
     { label: "Tickets", href: "/tickets", icon: Ticket },
     { label: "Profil", href: "/profile", icon: User },
+    { label: "Paramètres", href: "/settings", icon: Settings },
   ];
 
   return (
@@ -23,7 +27,6 @@ export function Sidebar() {
         collapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Toggle button */}
       <button
         onClick={toggle}
         className="absolute -right-3 top-6 w-6 h-6 rounded-full bg-white border shadow flex items-center justify-center"
@@ -36,7 +39,6 @@ export function Sidebar() {
         />
       </button>
 
-      {/* Navigation */}
       <nav className="space-y-2 mt-10">
         {nav.map((item) => {
           const Icon = item.icon;
@@ -59,9 +61,26 @@ export function Sidebar() {
             </Link>
           );
         })}
-      </nav>
+        {!loading && (
+          <div
+            className={clsx(
+              "mt-6 flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition",
+              collapsed ? "justify-center" : "",
+              connected
+                ? "bg-green-50 text-green-700"
+                : "bg-red-50 text-red-700"
+            )}
+          >
+            <Mail size={collapsed ? 20 : 18} className="shrink-0" />
 
-      {/* Déconnexion */}
+            {!collapsed && (
+              <span>
+                Gmail {connected ? "connecté" : "non connecté"}
+              </span>
+            )}
+          </div>
+        )}
+      </nav>
       <form action="/api/auth/logout" method="POST">
         <button
           className={clsx(
