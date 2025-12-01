@@ -28,9 +28,11 @@ export function Actions({ id }: { id: string }) {
       setLoadingMsg(false);
       return;
     }
+      window.dispatchEvent(
+        new CustomEvent("ticket-status-changed", { detail: "PENDING" })
+      );
 
     setTextareaValue("");
-
     setLoadingMsg(false);
 
     router.refresh();
