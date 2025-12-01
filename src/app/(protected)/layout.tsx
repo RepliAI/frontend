@@ -15,7 +15,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         id="main-content"
         className={`flex-1 overflow-y-auto transition-all duration-300 
           ${collapsed ? "ml-16" : "ml-64"}
-          px-6 md:px-10 py-6     /* <-- AJOUT : padding propre */
+          px-6 md:px-10 py-6
         `}
       >
         {children}

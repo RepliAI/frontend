@@ -1,23 +1,35 @@
+import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-export async function PATCH(req: Request, context: { params: Promise<{ id: string }> }) {
-  const { params } = context;
-  const resolvedParams = await params;
+export async function GET() {
+  const cookieStore = await cookies();
+  
+  const accessToken = cookieStore.get("access_token")?.value;
 
-  const token = (await cookies()).get("access_token")?.value;
-  const body = await req.json();
+  if (!accessToken) {
+    return NextResponse.json(
+      { connected: false, reason: "No token" },
+      { status: 200 }
+    );
+  }
 
-  const res = await fetch(
-    `${process.env.BACKEND_URL}/tickets/${resolvedParams.id}/status`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    }
-  );
+  const backendUrl = process.env.BACKEND_URL!;
 
-  return new Response(await res.text(), { status: res.status });
+  const res = await fetch(`${backendUrl}/gmail/auth`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    return NextResponse.json(
+      { error: "Backend error" },
+      { status: res.status }
+    );
+  }
+
+  const data = await res.json();
+  return NextResponse.json(data);
 }
