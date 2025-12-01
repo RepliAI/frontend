@@ -3,12 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { ErrorModal } from "@/components/ui/ErrorModal";
+
 export function Actions({ id }: { id: string }) {
   const router = useRouter();
 
   const [loadingMsg, setLoadingMsg] = useState(false);
   const [loading, setLoading] = useState(false);
   const [textareaValue, setTextareaValue] = useState("");
+  const [showGmailError, setShowGmailError] = useState(false);
+  const [gmailErrorMessage, setGmailErrorMessage] = useState("");
 
   const sendMessage = async (formData: FormData) => {
     setLoadingMsg(true);
@@ -24,13 +28,24 @@ export function Actions({ id }: { id: string }) {
     });
 
     if (!response.ok) {
-      alert("Erreur lors de l'envoi du message");
+      const error = await response.json();
+
+      if (error.message === "GMAIL_NOT_CONNECTED") {
+        setGmailErrorMessage(
+          "Votre compte Gmail n’est pas connecté.\n\nVeuillez connecter votre Gmail dans les paramètres pour pouvoir envoyer des emails."
+        );
+        setShowGmailError(true);
+      } else {
+        setGmailErrorMessage("Une erreur est survenue.");
+        setShowGmailError(true);
+      }
       setLoadingMsg(false);
       return;
     }
-      window.dispatchEvent(
-        new CustomEvent("ticket-status-changed", { detail: "PENDING" })
-      );
+
+    window.dispatchEvent(
+      new CustomEvent("ticket-status-changed", { detail: "PENDING" })
+    );
 
     setTextareaValue("");
     setLoadingMsg(false);
@@ -58,8 +73,13 @@ export function Actions({ id }: { id: string }) {
   }
 
   return (
+    <>
+     <ErrorModal
+        open={showGmailError}
+        message={gmailErrorMessage}
+        onClose={() => setShowGmailError(false)}
+      />
     <div className="space-y-4">
-      {/* Envoi manuel */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -91,5 +111,6 @@ export function Actions({ id }: { id: string }) {
         {loading ? "Génération…" : "Générer une réponse IA"}
       </button>
     </div>
+    </>
   );
 }
