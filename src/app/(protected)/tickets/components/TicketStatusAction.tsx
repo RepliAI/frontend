@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const LABELS: any = {
   OPEN: "Ouvert",
@@ -17,7 +17,16 @@ export function TicketStatusActions({
 }) {
   const [status, setStatus] = useState(currentStatus);
 
-  async function updateStatus(newStatus: string) {
+  useEffect(() => {
+    const handler = (e: any) => {
+      setStatus(e.detail);
+    };
+  
+    window.addEventListener("ticket-status-changed", handler);
+    return () => window.removeEventListener("ticket-status-changed", handler);
+  }, [])
+
+  const updateStatus = async (newStatus: string) => {
     setStatus(newStatus);
 
     const res = await fetch(`/api/tickets/${id}/status`, {
