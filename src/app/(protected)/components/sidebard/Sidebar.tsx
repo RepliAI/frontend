@@ -3,7 +3,7 @@
 import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
-import { LogOut, Home, Ticket, User, ChevronLeft, Mail, Settings } from "lucide-react";
+import { LogOut, Home, Ticket, User, ChevronLeft, Mail, Settings, CreditCard } from "lucide-react";
 
 import { useSidebar } from "@/context/SidebarContext";
 import { useGmailStatus } from "@/app/hooks/useGmailStatus";
@@ -17,6 +17,7 @@ export function Sidebar() {
     { label: "Tableau de bord", href: "/dashboard", icon: Home },
     { label: "Tickets", href: "/tickets", icon: Ticket },
     { label: "Profil", href: "/profile", icon: User },
+    { label: "Abonnement", href: "/billing", icon: CreditCard },
     { label: "Paramètres", href: "/settings", icon: Settings },
   ];
 
