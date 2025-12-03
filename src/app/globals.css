@@ -2,53 +2,106 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(4px);
-    }
+html,
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fadeIn {
-    animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out forwards;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-pop {
+  animation: pop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .loader-dot {
-    font-size: 12px;
-    display: inline-block;
+  font-size: 12px;
+  display: inline-block;
 }
 
 @keyframes bounce {
-
-    0%,
-    100% {
-        transform: translateY(0);
-        opacity: .7;
-    }
-
-    50% {
-        transform: translateY(-4px);
-        opacity: 1;
-    }
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
 }
 
 .animate-bounce {
-    animation: bounce 0.6s infinite;
+  animation: bounce 0.6s infinite;
 }
 
 .delay-0 {
-    animation-delay: 0ms;
+  animation-delay: 0ms;
 }
 
 .delay-150 {
-    animation-delay: 150ms;
+  animation-delay: 150ms;
 }
 
 .delay-300 {
-    animation-delay: 300ms;
+  animation-delay: 300ms;
+}
+
+.glass {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.dark .glass {
+  background: rgba(24, 24, 24, 0.45);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  transition: background-color 0.25s ease,
+              border-color 0.25s ease,
+              color 0.25s ease;
 }
