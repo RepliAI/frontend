@@ -40,7 +40,7 @@ const plans = [
   {
     id: "business",
     name: "Business",
-    price: "79€ / mois",
+    price: "69€ / mois",
     highlighted: false,
     description:
       "Automatisation maximale pour équipes support exigeantes.",
@@ -59,13 +59,32 @@ export default function BillingPlans({ current }: { current: any }) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
 
-  async function subscribe(planId: string) {
+  const handleUnsubscribe = async () => {
+    try {
+      setLoading("free");
+
+      const res = await fetch("/api/billing/unsuscribe", {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        console.error("Unsubscribe failed");
+        return;
+      }
+
+      router.refresh();
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  async function subscribe(planId: string, id: string) {
     if (planId === current?.plan || planId === "free") return;
     setLoading(planId);
 
     const res = await fetch("/api/billing/checkout", {
       method: "POST",
-      body: JSON.stringify({ priceId: planId }),
+      body: JSON.stringify({ priceId: planId, plan: id }),
     });
 
     const data = await res.json();
@@ -127,7 +146,7 @@ export default function BillingPlans({ current }: { current: any }) {
               </ul>
 
               <button
-                onClick={() => subscribe(plan.planId!)}
+                onClick={() => plan.id !== 'free'? subscribe(plan.planId!, plan.id): handleUnsubscribe()}
                 disabled={isCurrent || loading === plan.id}
                 className={`mt-8 w-full py-3 rounded-xl font-medium transition ${
                   isCurrent
