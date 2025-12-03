@@ -11,7 +11,6 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   const { priceId } = body || {};
-  console.log("🚀 ~ POST ~ priceId:", priceId)
 
   if (!priceId) {
     return NextResponse.json(
