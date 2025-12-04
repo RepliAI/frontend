@@ -1,7 +1,10 @@
 "use client";
 
+import { Settings } from "lucide-react";
+
 import { useGmailStatus } from "@/app/hooks/useGmailStatus";
 import { useUserPreferences } from "@/app/hooks/useUserPreferencies";
+import { PageHeader } from "@/components/pageHeader";
 
 import { PreferencesCard } from "./components/PreferencesCard";
 import { GmailConnectCard } from "./components/GmailConnectCard";
@@ -16,10 +19,8 @@ export default function SettingsPage() {
 
   return (
     <div className="p-6 space-y-10 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-semibold">Paramètres</h1>
-
+      <PageHeader  icon={<Settings size={18} />}  title="Paramètres"  subtitle="Personnalisez votre expérience et vos préférences IA." />
       <GmailConnectCard connected={connected} />
-
       <PreferencesCard preferences={preferences} />
     </div>
   );

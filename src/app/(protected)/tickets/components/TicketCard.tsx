@@ -2,37 +2,40 @@
 
 import Link from "next/link";
 import { StatusBadge } from "./StatusBadge";
+import { ChevronRight } from "lucide-react";
 
 interface Props {
-  ticket: any;
+	ticket: any;
 }
 
 export function TicketCard({ ticket }: Props) {
-  const lastMessage =
-    ticket.messages && ticket.messages.length > 0
-      ? ticket.messages[ticket.messages.length - 1].content
-      : "Aucun message";
+	const lastMessage = ticket.messages && ticket.messages.length > 0 ? ticket.messages[ticket.messages.length - 1].content : "Aucun message";
 
-  return (
-    <Link
-      href={`/tickets/${ticket.id}`}
-      className="block bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition cursor-pointer"
-    >
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="font-semibold">{ticket.subject}</h2>
-        <StatusBadge status={ticket.status} />
-      </div>
+	return (
+		<Link href={`/tickets/${ticket.id}`} className="group relative block rounded-xl overflow-hidden bg-white/70 backdrop-blur-lg border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 p-5">
+			<div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/40 to-white/10 pointer-events-none" />
+			<div className="relative flex justify-between items-start mb-3">
+				<div className="flex flex-col gap-1">
+					<h2 className="font-semibold text-gray-900 text-lg leading-tight">
+						{ticket.subject}
+					</h2>
+					<p className="text-sm text-gray-500 line-clamp-2 max-w-[90%]">
+						{lastMessage}
+					</p>
+				</div>
+				<StatusBadge status={ticket.status} />
+			</div>
+			<div className="relative flex items-center justify-between mt-4">
+				<p className="text-xs text-gray-400">
+					{new Date(ticket.createdAt).toLocaleDateString("fr-FR", {
+						day: "2-digit",
+						month: "2-digit",
+						year: "numeric",
+					})}
+				</p>
 
-      <p className="text-sm text-gray-500 line-clamp-2 mb-3">
-        {lastMessage}
-      </p>
-
-      <p className="text-xs text-gray-400">
-        {new Date(ticket.createdAt).toLocaleDateString("fr-FR", {
-          day: "2-digit",
-          month: "2-digit",
-        })}
-      </p>
-    </Link>
-  );
+				<ChevronRight className="text-gray-400 group-hover:text-gray-800 transition-transform duration-300 group-hover:translate-x-1" size={18}/>
+			</div>
+		</Link>
+	);
 }
