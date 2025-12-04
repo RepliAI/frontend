@@ -8,16 +8,15 @@ const plans = [
     id: "free",
     name: "Gratuit",
     price: "0€ / mois",
-    highlighted: false,
+    planId: "FREE",
     description:
       "Idéal pour découvrir la plateforme et gérer vos premiers tickets.",
-    planId: "FREE",
     features: [
       { label: "5 tickets / mois", included: true },
       { label: "Import Gmail automatique", included: false },
       { label: "Génération IA illimitée", included: false },
       { label: "Envoi automatique IA", included: false },
-      { label: "Support client prioritaire", included: false },
+      { label: "Support prioritaire", included: false },
     ],
   },
   {
@@ -25,10 +24,9 @@ const plans = [
     name: "Pro",
     price: "29€ / mois",
     highlighted: true,
-    badge: "Le plus populaire",
+    planId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO!,
     description:
       "Parfait pour automatiser votre support et accélérer vos réponses.",
-    planId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO,
     features: [
       { label: "Tickets illimités", included: true },
       { label: "Import Gmail automatique", included: true },
@@ -41,10 +39,9 @@ const plans = [
     id: "business",
     name: "Business",
     price: "69€ / mois",
-    highlighted: false,
+    planId: process.env.NEXT_PUBLIC_STRIPE_PRICE_BUSINESS!,
     description:
-      "Automatisation maximale pour équipes support exigeantes.",
-    planId: process.env.NEXT_PUBLIC_STRIPE_PRICE_BUSINESS,
+    "Automatisation maximale pour équipes support exigeantes.",
     features: [
       { label: "Tickets illimités", included: true },
       { label: "Import Gmail automatique", included: true },
@@ -55,54 +52,38 @@ const plans = [
   },
 ];
 
-export default function BillingPlans({ current }: { current: any }) {
+export default function BillingPlans({ current } :  { current: any }) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
-  const handleUnsubscribe = async () => {
-    try {
-      setLoading("free");
-
-      const res = await fetch("/api/billing/unsuscribe", {
-        method: "POST",
-      });
-
-      if (!res.ok) {
-        console.error("Unsubscribe failed");
-        return;
-      }
-
-      router.refresh();
-    } finally {
-      setLoading(null);
-    }
-  };
-
-  async function subscribe(planId: string, id: string) {
-    if (planId === current?.plan || planId === "free") return;
-    setLoading(planId);
+  const handlePlanChange = async (priceId: string, plan: string ) => {
+    setLoading(plan);
+    setMessage(null);
 
     const res = await fetch("/api/billing/checkout", {
       method: "POST",
-      body: JSON.stringify({ priceId: planId, plan: id }),
+      body: JSON.stringify({ priceId, plan }),
     });
 
     const data = await res.json();
-    if (data.url) router.push(data.url);
 
+    if (data.url) {
+      router.push(data.url);
+      return;
+    }
+
+    setMessage("Votre changement d’offre sera appliqué à la fin de la période en cours.");
     setLoading(null);
-  }
+
+    router.refresh();
+  };
 
   return (
-    <div className="max-w-5xl mx-auto py-16 px-6 space-y-12">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">
-          Choisissez le plan adapté à votre croissance
-        </h1>
-        <p className="text-gray-600 text-lg">
-          Passez au niveau supérieur lorsque vous êtes prêt. Le plan gratuit reste accessible sans engagement.
-        </p>
-      </div>
+    <div className="max-w-5xl mx-auto py-16 px-6 space-y-8">
+      {message && (
+        <p className="text-center text-green-600 font-medium">{message}</p>
+      )}
 
       <div className="grid md:grid-cols-3 gap-8">
         {plans.map((plan) => {
@@ -111,16 +92,9 @@ export default function BillingPlans({ current }: { current: any }) {
           return (
             <div
               key={plan.id}
-              className={`relative rounded-2xl border p-8 bg-white shadow-sm transition hover:shadow-md ${
-                plan.highlighted ? "border-black shadow-lg" : "border-gray-200"
-              }`}
+              className={`relative rounded-2xl border p-8 shadow-sm 
+                ${plan.highlighted ? "border-black shadow-lg" : "border-gray-200"}`}
             >
-              {plan.badge && (
-                <div className="absolute top-4 right-4 bg-black text-white text-xs px-3 py-1 rounded-full">
-                  {plan.badge}
-                </div>
-              )}
-
               <h2 className="text-2xl font-semibold">{plan.name}</h2>
               <p className="text-gray-600 mt-1">{plan.description}</p>
 
@@ -129,16 +103,12 @@ export default function BillingPlans({ current }: { current: any }) {
               </div>
 
               <ul className="mt-6 space-y-3">
-                {plan.features.map((f, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-sm">
-                    {f.included ? (
-                      <span className="text-green-600">✔</span>
-                    ) : (
-                      <span className="text-gray-400">✖</span>
-                    )}
-                    <span
-                      className={f.included ? "text-gray-900" : "text-gray-400"}
-                    >
+                {plan.features.map((f, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm">
+                    <span className={f.included ? "text-green-600" : "text-gray-400"}>
+                      {f.included ? "✔" : "✖"}
+                    </span>
+                    <span className={f.included ? "" : "text-gray-400"}>
                       {f.label}
                     </span>
                   </li>
@@ -146,20 +116,19 @@ export default function BillingPlans({ current }: { current: any }) {
               </ul>
 
               <button
-                onClick={() => plan.id !== 'free'? subscribe(plan.planId!, plan.id): handleUnsubscribe()}
+                onClick={() =>
+                  handlePlanChange(plan.planId, plan.id )
+                }
                 disabled={isCurrent || loading === plan.id}
-                className={`mt-8 w-full py-3 rounded-xl font-medium transition ${
-                  isCurrent
+                className={`mt-8 w-full py-3 rounded-xl font-medium transition 
+                  ${isCurrent
                     ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                    : plan.highlighted
-                    ? "bg-black text-white hover:bg-gray-900"
-                    : "bg-gray-900 text-white hover:bg-black"
-                }`}
+                    : "bg-black text-white hover:bg-gray-900"}`}
               >
                 {isCurrent
                   ? "Plan actuel"
                   : loading === plan.id
-                  ? "Redirection…"
+                  ? "Chargement…"
                   : "Choisir ce plan"}
               </button>
             </div>

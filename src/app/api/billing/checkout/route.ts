@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const { priceId } = body || {};
+  const { priceId, plan } = body || {};
 
   if (!priceId) {
     return NextResponse.json(
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify({ priceId }),
+    body: JSON.stringify({ priceId, plan }),
   });
 
   const data = await res.json();
