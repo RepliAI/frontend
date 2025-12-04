@@ -1,7 +1,9 @@
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { CreditCard } from "lucide-react";
 
 import BillingPlans from "./components/BillingPlans";
+import { PageHeader } from "@/components/pageHeader";
 
 export const revalidate = 0;
 
@@ -17,19 +19,11 @@ export default async function BillingPage() {
     cache: "no-store",
   });
 
-  const subscription = res.ok
-    ? await res.json()
-    : { plan: "free", status: "active", renewAt: null };
+  const subscription = res.ok ? await res.json() : { plan: "free", status: "active", renewAt: null };
 
   return (
-    <div className="p-6 space-y-6 max-w-4xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-semibold">Abonnement</h1>
-        <p className="text-sm text-gray-500">
-          Gérez votre abonnement à l’assistant de support IA.
-        </p>
-      </div>
-
+    <div className="p-6 space-y-10 max-w-5xl mx-auto">
+      <PageHeader icon={<CreditCard size={18} />} title="Abonnement" subtitle="Gérez votre formule, vos paiements et vos informations de facturation."/>
       <BillingPlans current={subscription} />
     </div>
   );

@@ -1,50 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { Mail } from "lucide-react";
 
 export function GmailConnectCard({ connected }: { connected: boolean }) {
-    const [loading, setLoading] = useState(false);
-
-    const handleConnect = async () => {
-        setLoading(true);
-
-        try {
-            const res = await fetch("/api/gmail/connect");
-            const data = await res.json();
-
-            if (data.url) {
-                window.location.href = data.url;
-            }
-        } catch (err) {
-            console.error("Erreur connexion Gmail:", err);
-        }
-
-        setLoading(false);
-    };
-
     return (
-        <div className="p-6 border rounded-xl bg-white shadow-sm">
-            <h2 className="text-xl font-semibold mb-3">Connexion Gmail</h2>
-
-            {connected ? (
-                <div className="p-4 bg-green-100 text-green-700 rounded-lg">
-                    Votre compte Gmail est connecté ✓
+        <div className="rounded-xl border bg-white p-5 shadow-sm  hover:shadow-md transition cursor-default">
+            <div className="flex items-start gap-4">
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${connected ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                    <Mail size={18} />
                 </div>
-            ) : (
-                <>
-                <div className="p-4 bg-red-100 text-red-700 rounded-lg">
-                    Vous n’êtes pas connecté à Gmail.
+                <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">
+                        Gmail {connected ? "connecté" : "non connecté"}
+                    </h3>
+                    <p className="text-gray-500 text-sm mt-1">
+                        {connected ? "Votre synchronisation Gmail est active. Les emails entrants créent automatiquement des tickets." : "Connectez Gmail pour que vos emails clients se transforment automatiquement en tickets."}
+                    </p>
+                    {!connected && (
+                        <Link href="/gmail/connect" className="inline-block mt-4 px-4 py-2 rounded-lg  bg-black text-white text-sm hover:bg-gray-800  transition shadow-sm">
+                            Connecter Gmail
+                        </Link>
+                    )}
                 </div>
-                <button
-                    onClick={handleConnect}
-                    disabled={loading}
-                    className="mt-4 px-5 py-2 text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50"
-                >
-                    {loading ? "Redirection..." : "Connecter Gmail"}
-                </button>
-                </>
-            )}
-
+            </div>
         </div>
     );
 }
