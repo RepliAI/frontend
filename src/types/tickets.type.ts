@@ -22,4 +22,4 @@ export interface TicketListResponse {
 }  
 export interface AIReplyResponse {
     reply:string;
-}  
+}

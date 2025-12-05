@@ -1,34 +1,64 @@
-import { cookies } from "next/headers";
-import { StatusPieChart } from "../../../components/modules/dashboard/StatusPieChart";
-import { TicketTrendChart } from "../../../components/modules/dashboard/TicketTrendChart";
-import { PeriodSelector } from "../../../components/modules/dashboard/PeriodSelector";
-import StatCard from "../../../components/modules/dashboard/StatsCard";
-import { GmailAlertBanner } from "../../../components/modules/dashboard/GmailAlertBanner";
-import { PageHeader } from "@/components/layout/pageHeader";
+'use client'
 import { BarChart3 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export const revalidate = 0;
+import { StatusPieChart } from "@/components/modules/dashboard/StatusPieChart";
+import { TicketTrendChart } from "@/components/modules/dashboard/TicketTrendChart";
+import { PeriodSelector } from "@/components/modules/dashboard/PeriodSelector";
+import StatCard from "@/components/modules/dashboard/StatsCard";
+import { GmailAlertBanner } from "@/components/modules/dashboard/GmailAlertBanner";
+import { PageHeader } from "@/components/layout/pageHeader";
+import { dashboardService } from "@/services/dashboard.service";
+import { TicketStatsDashboard } from "@/types/dashboard.type";
 
-export default async function DashboardPage({ searchParams }: any) {
-	const token = (await cookies()).get("access_token")?.value;
-	if (!token) return <div>Unauthorized</div>;
 
-	const paramsObj = await searchParams;
-	const daysParam = paramsObj?.days;
+
+export default function DashboardPage() {
+
+	const searchParams = useSearchParams();
+	const daysParam = searchParams.get("days");
 	const days = daysParam ? parseInt(daysParam, 10) || 14 : 14;
 
-	const res = await fetch(`${process.env.BACKEND_URL}/stats?days=${days}`, {
-		cache: "no-store",
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
+	const [stats, setStats] = useState<TicketStatsDashboard>({
+		total: 0,
+		open: 0,
+		pending: 0,
+		resolved: 0,
+		lastTickets: [],
+		period: {
+			from: new Date(),
+			to: getDateNDaysAgoAtMidnight(14),
+			tickets: [],
+			summary: {
+				open: 0,
+				pending: 0,
+				resolved: 0
+			}
+		}
 	});
+	const [loading, setLoading] = useState(true);
 
-	if (!res.ok) {
-		return <div className="p-6">Impossible de charger les statistiques.</div>;
+	function getDateNDaysAgoAtMidnight(days: number): Date {
+		const date = new Date();
+		date.setHours(0, 0, 0, 0);
+		date.setDate(date.getDate() - days);
+		return date;
 	}
 
-	const stats = await res.json();
+	const handleFetchStats = async () => {
+		setLoading(true);
+		try {
+			const data = await dashboardService.getStats(days);
+			setStats(data);
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	useEffect(() => {
+		handleFetchStats();
+	}, [days])
 
 	const periodStats = stats.period?.summary || {
 		open: 0,
@@ -41,7 +71,7 @@ export default async function DashboardPage({ searchParams }: any) {
 		<div className="space-y-10">
 			<GmailAlertBanner />
 			<div className="flex items-center justify-between">
-				<PageHeader icon={<BarChart3 size={18} />} title="Tableau de bord" subtitle="Vue d’ensemble de votre activité support."/> 
+				<PageHeader icon={<BarChart3 size={18} />} title="Tableau de bord" subtitle="Vue d’ensemble de votre activité support." />
 				<PeriodSelector currentDays={days} />
 			</div>
 			<section className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
