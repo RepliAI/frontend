@@ -1,41 +1,51 @@
-import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
 import { Ticket } from "lucide-react";
+import { useParams } from "next/navigation";
 
+import { ticketService } from "@/services/tickets.service";
 import { PageHeader } from "@/components/layout/pageHeader";
-import { Actions } from "@/components/modules/tickets/detail/Actions";
-import { MessageTimeline } from "@/components/modules/tickets/detail/MessageTimeline";
-import { TicketStatusActions } from "@/components/modules/tickets/detail/TicketStatusAction";
 import { TicketStatusBadge } from "@/components/modules/tickets/detail/TicketStatusBadge";
+import { TicketStatusActions } from "@/components/modules/tickets/detail/TicketStatusAction";
+import { MessageTimeline } from "@/components/modules/tickets/detail/MessageTimeline";
+import { Actions } from "@/components/modules/tickets/detail/Actions";
+import { Ticket as TicketDetailResponse } from "@/types";
 
+export default function TicketDetailPage() {
+	const params = useParams();
+	const id = params.id as string;
 
-export const revalidate = 0;
+	const [ticket, setTicket] = useState<TicketDetailResponse | null>(null);
+	const [loading, setLoading] = useState(true);
 
-export default async function TicketDetailPage(props: any) {
-	const { params } = props;
-	const resolvedParams = await params;
-	const id = resolvedParams.id;
+	const handleGetTicket = async () => {
+		try {
+			const data = await ticketService.getTicketById(id);
+			setTicket(data);
+		} catch (e) {
+			setTicket(null);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-	const cookieStore = await cookies();
-	const accessToken = cookieStore.get("access_token")?.value;
-	if (!accessToken) notFound();
+	useEffect(() => {
+		handleGetTicket();
+	}, [id]);
 
-	const res = await fetch(`${process.env.BACKEND_URL}/tickets/${id}`, {
-		cache: "no-store",
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
+	useEffect(() => {
+		const handler = () => handleGetTicket();
+		window.addEventListener("messages-updated", handler);
+		return () => window.removeEventListener("messages-updated", handler);
+	  }, []);
 
-	if (!res.ok) {
-		return <div className="p-6 text-gray-600">Ticket introuvable.</div>;
-	}
-
-	const ticket = await res.json();
+	if (loading) return <div className="p-6">Chargement…</div>;
+	if (!ticket) return <div className="p-6">Ticket introuvable.</div>;
 
 	return (
 		<div className="max-w-4xl mx-auto p-6 space-y-8">
-			<PageHeader icon={<Ticket size={18} />} title={ticket.subject} subtitle={`Ticket créé le ${new Date(ticket.createdAt).toLocaleDateString("fr-FR")}`}/>
+			<PageHeader icon={<Ticket size={18} />} title={ticket.subject} subtitle={`Ticket créé le ${new Date(ticket.createdAt).toLocaleDateString("fr-FR")}`} />
 			<div className="bg-white border rounded-xl shadow-sm p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 				<TicketStatusBadge initialStatus={ticket.status} />
 				<TicketStatusActions id={id} currentStatus={ticket.status} />

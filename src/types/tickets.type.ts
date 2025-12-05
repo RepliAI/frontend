@@ -20,3 +20,6 @@ export interface TicketListResponse {
     page: number;
     pageSize:number;
 }  
+export interface AIReplyResponse {
+    reply:string;
+}  
