@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { StatusBadge } from "./StatusBadge";
 import { ChevronRight } from "lucide-react";
+import { StatusBadge } from "./StatusBadge";
 
 interface Props {
 	ticket: any;

@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
-import { TicketFilters } from "./components/TicketsFilter";
-import { TicketList } from "./components/TicketList";
-import { Pagination } from "./components/Pagination";
-import { PageHeader } from "@/components/pageHeader";
+import { TicketFilters } from "../../../components/modules/tickets/TicketsFilter";
+import { TicketList } from "../../../components/modules/tickets/TicketList";
+import { Pagination } from "../../../components/modules/tickets/Pagination";
+import { PageHeader } from "@/components/layout/pageHeader";
 import { Ticket } from "lucide-react";
 
 export const revalidate = 0;

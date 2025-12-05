@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useGmailStatus } from "@/app/hooks/useGmailStatus";
+import { useGmailStatus } from "@/hooks/useGmailStatus";
 import { AlertTriangle, CheckCircle } from "lucide-react";
 
 export function GmailAlertBanner() {
