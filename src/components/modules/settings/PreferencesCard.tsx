@@ -3,41 +3,27 @@
 import { useState, useRef } from "react";
 import { Sparkles, PenLine, SlidersHorizontal } from "lucide-react";
 
-type Preferences = {
-	tone: string;
-	signature: string;
-	autoImport: boolean;
-	autoAiSend: boolean;
-};
+import { settingsService } from "@/services/settings.service";
+import { Preferences } from "@/types";
 
-export function PreferencesCard({ preferences }: { preferences: Preferences }) {
+interface PreferencesCardProps{
+	preferences: Preferences
+}
+
+export function PreferencesCard({ preferences }: PreferencesCardProps ) {
 	const [prefs, setPrefs] = useState<Preferences>(preferences);
 	const [loading, setLoading] = useState(false);
 	const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-	function buildDto(next: Preferences) {
-		return {
-			tone: next.tone,
-			signature: next.signature,
-			autoImport: next.autoImport,
-			autoAiSend: next.autoAiSend,
-		};
-	}
-
-	async function updatePrefs(partial: Partial<Preferences>) {
+	const handleUpdatePrefs = async (partial: Partial<Preferences>) => {
 		const next = { ...prefs, ...partial };
 		setPrefs(next);
 		setLoading(true);
-
-		const res = await fetch("/api/preferences/update", {
-			method: "PATCH",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(buildDto(next)),
-		});
-
-		const data = await res.json();
-		setPrefs(data);
-		setLoading(false);
+		try {
+			await settingsService.updatePrefs(next);
+		} finally {
+			setLoading(false);
+		}
 	}
 
 	function updateSignature(value: string) {
@@ -47,16 +33,16 @@ export function PreferencesCard({ preferences }: { preferences: Preferences }) {
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 
 		debounceRef.current = setTimeout(() => {
-			updatePrefs({ signature: value });
-		}, 500);
+			handleUpdatePrefs({ signature: value });
+		}, 1000);
 	}
 
 	function updateTone(value: string) {
-		updatePrefs({ tone: value });
+		handleUpdatePrefs({ tone: value });
 	}
 
 	function togglePref(key: "autoImport" | "autoAiSend") {
-		updatePrefs({ [key]: !prefs[key] } as any);
+		handleUpdatePrefs({ [key]: !prefs[key] } as any);
 	}
 
 	return (
