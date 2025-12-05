@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { authService } from '@/services/auth.service';
+
 type AuthMode = 'login' | 'register' | 'forgot';
 
 export default function AuthPage() {
@@ -14,7 +16,15 @@ export default function AuthPage() {
 	const [success, setSuccess] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 
-	async function handleSubmit(e: React.FormEvent) {
+	const handleLogin =  async () => {
+		try {
+		  await authService.login(email, password);
+		  window.location.href = "/tickets";
+		} catch (err: any) {
+		  throw new Error(err.message || "Impossible de se connecter.");
+		}
+	}
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
 		setSuccess(null);
@@ -27,21 +37,8 @@ export default function AuthPage() {
 		setLoading(true);
 		try {
 			if (mode === 'login') {
-				const res = await fetch('/api/auth/login', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email, password }),
-				});
-
-				if (!res.ok) {
-					const data = await res.json().catch(() => ({}));
-					throw new Error(data.message || 'Identifiants incorrects.');
-				}
-
-				window.location.href = '/tickets';
-				return;
+				await handleLogin();
 			}
-
 			if (mode === 'register') {
 				const res = await fetch('/api/auth/register', {
 					method: 'POST',
