@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
-import { StatusPieChart } from "./components/StatusPieChart";
-import { TicketTrendChart } from "./components/TicketTrendChart";
-import { PeriodSelector } from "./components/PeriodSelector";
-import StatCard from "./components/StatsCard";
-import { GmailAlertBanner } from "./components/GmailAlertBanner";
-import { PageHeader } from "@/components/pageHeader";
+import { StatusPieChart } from "../../../components/modules/dashboard/StatusPieChart";
+import { TicketTrendChart } from "../../../components/modules/dashboard/TicketTrendChart";
+import { PeriodSelector } from "../../../components/modules/dashboard/PeriodSelector";
+import StatCard from "../../../components/modules/dashboard/StatsCard";
+import { GmailAlertBanner } from "../../../components/modules/dashboard/GmailAlertBanner";
+import { PageHeader } from "@/components/layout/pageHeader";
 import { BarChart3 } from "lucide-react";
 
 export const revalidate = 0;

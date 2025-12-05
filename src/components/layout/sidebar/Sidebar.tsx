@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { LogOut, Home, Ticket, User, ChevronLeft, Mail, Settings, CreditCard } from "lucide-react";
 
 import { useSidebar } from "@/context/SidebarContext";
-import { useGmailStatus } from "@/app/hooks/useGmailStatus";
+import { useGmailStatus } from "@/hooks/useGmailStatus";
 
 export function Sidebar() {
   const pathname = usePathname();

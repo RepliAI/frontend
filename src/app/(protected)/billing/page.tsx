@@ -2,8 +2,8 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { CreditCard } from "lucide-react";
 
-import BillingPlans from "./components/BillingPlans";
-import { PageHeader } from "@/components/pageHeader";
+import BillingPlans from "@/components/modules/billing/BillingPlans";
+import { PageHeader } from "@/components/layout/pageHeader";
 
 export const revalidate = 0;
 

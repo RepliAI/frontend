@@ -2,12 +2,11 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { Ticket } from "lucide-react";
 
-import { PageHeader } from "@/components/pageHeader";
-
-import { Actions } from "../components/Actions";
-import { MessageTimeline } from "./components/MessageTimeline";
-import { TicketStatusActions } from "../components/TicketStatusAction";
-import { TicketStatusBadge } from "./components/TicketStatusBadge";
+import { PageHeader } from "@/components/layout/pageHeader";
+import { Actions } from "@/components/modules/tickets/detail/Actions";
+import { MessageTimeline } from "@/components/modules/tickets/detail/MessageTimeline";
+import { TicketStatusActions } from "@/components/modules/tickets/detail/TicketStatusAction";
+import { TicketStatusBadge } from "@/components/modules/tickets/detail/TicketStatusBadge";
 
 
 export const revalidate = 0;

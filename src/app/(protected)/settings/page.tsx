@@ -2,12 +2,11 @@
 
 import { Settings } from "lucide-react";
 
-import { useGmailStatus } from "@/app/hooks/useGmailStatus";
-import { useUserPreferences } from "@/app/hooks/useUserPreferencies";
-import { PageHeader } from "@/components/pageHeader";
-
-import { PreferencesCard } from "./components/PreferencesCard";
-import { GmailConnectCard } from "./components/GmailConnectCard";
+import { useGmailStatus } from "@/hooks/useGmailStatus";
+import { useUserPreferences } from "@/hooks/useUserPreferencies";
+import { PageHeader } from "@/components/layout/pageHeader";
+import { PreferencesCard } from "@/components/modules/settings/PreferencesCard";
+import { GmailConnectCard } from "@/components/modules/settings/GmailConnectCard";
 
 export default function SettingsPage() {
   const { loading: gmailLoading, connected } = useGmailStatus();
