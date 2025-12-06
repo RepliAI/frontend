@@ -23,3 +23,9 @@ export interface TicketListResponse {
 export interface AIReplyResponse {
     reply:string;
 }
+
+export enum Status {
+    Open = "OPEN",
+    Pending = "PENDING",
+    Resolved = "RESOLVED",
+}

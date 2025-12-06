@@ -40,6 +40,8 @@ export function Actions({ id }: { id: string }) {
 			setTextareaValue("");
 			setLoadingMsg(false);
 			router.refresh();
+		} catch(err){
+			setGmailErrorMessage(err instanceof Error ? err.message : "Une erreur s'est produite lors de l'envoi du message")
 		} finally {
 			setLoadingMsg(false);
 		}
