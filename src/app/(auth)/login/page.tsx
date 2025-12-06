@@ -2,16 +2,18 @@
 
 import { useState } from 'react';
 
+import { AuthMode } from '@/types';
 import { authService } from '@/services/auth.service';
+import { authTabsList, featureList } from '@/utils/constants';
+import Feature from '@/components/modules/auth/Feature';
+import AuthTab from '@/components/modules/auth/AuthTab';
 
-type AuthMode = 'login' | 'register' | 'forgot';
 
 export default function AuthPage() {
-	const [mode, setMode] = useState<AuthMode>('login');
+	const [mode, setMode] = useState<AuthMode>(AuthMode.Login);
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [passwordConfirm, setPasswordConfirm] = useState('');
-	const [name, setName] = useState('');
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
@@ -43,7 +45,7 @@ export default function AuthPage() {
 				const res = await fetch('/api/auth/register', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email, password, name }),
+					body: JSON.stringify({ email, password }),
 				});
 
 				if (!res.ok) {
@@ -52,7 +54,7 @@ export default function AuthPage() {
 				}
 
 				setSuccess('Compte créé avec succès. Vous pouvez vous connecter.');
-				setMode('login');
+				setMode(AuthMode.Login);
 				return;
 			}
 
@@ -81,7 +83,7 @@ export default function AuthPage() {
 	const title = mode === 'login' ? 'Connexion' : mode === 'register' ? 'Créer un compte' : 'Mot de passe oublié';
 
 	const subtitle = mode === 'login' ? 'Accédez à votre espace RepliAI.' : mode === 'register' ? 'Rejoignez RepliAI en quelques secondes.' : 'Recevez un lien de réinitialisation.';
-
+	
 	return (
 		<div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-gray-50 text-gray-900">
 			<div className="hidden lg:flex relative items-center justify-center overflow-hidden">
@@ -102,10 +104,9 @@ export default function AuthPage() {
 						et génère des réponses prêtes à envoyer, adaptées à votre ton.
 					</p>
 					<div className="grid grid-cols-2 gap-6 pt-2">
-						<Feature title="Connexion Gmail" desc="Import automatique des emails" />
-						<Feature title="IA intégrée" desc="Réponses prêtes en 1 clic" />
-						<Feature title="Dashboard clair" desc="Vue globale de votre support" />
-						<Feature title="Abonnements flexibles" desc="Upgrade en un clic" />
+						{ featureList.map((feature, index) => (
+							<Feature key={index} title={feature.title} desc={feature.desc} />
+						))}
 					</div>
 				</div>
 			</div>
@@ -119,9 +120,9 @@ export default function AuthPage() {
 						<p className="text-sm text-gray-500">{subtitle}</p>
 					</header>
 					<div className="flex gap-2 bg-gray-100 p-1 rounded-full text-sm font-medium">
-						<AuthTab label="Connexion" mode="login" current={mode} onClick={setMode} />
-						<AuthTab label="Inscription" mode="register" current={mode} onClick={setMode} />
-						<AuthTab label="Mot de passe oublié" mode="forgot" current={mode} onClick={setMode} />
+						{authTabsList.map((tab, index) => (
+							<AuthTab label={tab.label} mode={tab.mode} current={mode} onClick={setMode} />
+						))}
 					</div>
 					{error && (
 						<div className="rounded-lg bg-red-100 border border-red-300 px-3 py-2 text-sm text-red-700">
@@ -163,17 +164,6 @@ export default function AuthPage() {
 						{mode === 'register' && (
 							<>
 								<div>
-									<label className="text-sm font-medium text-gray-700">Nom complet</label>
-									<input
-										type="text"
-										required
-										placeholder="Nicolas Martin"
-										className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-										value={name}
-										onChange={(e) => setName(e.target.value)}
-									/>
-								</div>
-								<div>
 									<label className="text-sm font-medium text-gray-700">
 										Confirmer le mot de passe
 									</label>
@@ -201,37 +191,3 @@ export default function AuthPage() {
 	);
 }
 
-function AuthTab({
-	label,
-	mode,
-	current,
-	onClick,
-}: {
-	label: string;
-	mode: AuthMode;
-	current: AuthMode;
-	onClick: (m: AuthMode) => void;
-}) {
-	const active = current === mode;
-	return (
-		<button
-			type="button"
-			onClick={() => onClick(mode)}
-			className={`flex-1 px-4 py-1.5 rounded-full transition ${active
-					? 'bg-white shadow-sm text-gray-900'
-					: 'text-gray-500 hover:text-gray-700'
-				}`}
-		>
-			{label}
-		</button>
-	);
-}
-
-function Feature({ title, desc }: { title: string; desc: string }) {
-	return (
-		<div className="space-y-1">
-			<div className="text-sm font-semibold text-gray-900">{title}</div>
-			<div className="text-xs text-gray-600">{desc}</div>
-		</div>
-	);
-}
