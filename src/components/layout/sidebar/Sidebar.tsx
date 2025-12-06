@@ -3,23 +3,16 @@
 import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
-import { LogOut, Home, Ticket, User, ChevronLeft, Mail, Settings, CreditCard } from "lucide-react";
+import { LogOut, ChevronLeft, Mail } from "lucide-react";
 
 import { useSidebar } from "@/context/SidebarContext";
 import { useGmailStatus } from "@/hooks/useGmailStatus";
+import { nav } from "@/utils/constants";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { collapsed, toggle } = useSidebar();
   const { loading, connected } = useGmailStatus();
-
-  const nav = [
-    { label: "Tableau de bord", href: "/dashboard", icon: Home },
-    { label: "Tickets", href: "/tickets", icon: Ticket },
-    { label: "Profil", href: "/profile", icon: User },
-    { label: "Abonnement", href: "/billing", icon: CreditCard },
-    { label: "Paramètres", href: "/settings", icon: Settings },
-  ];
 
   return (
     <aside className={clsx("h-screen border-r bg-white fixed left-0 top-0 p-4 flex flex-col justify-between transition-all duration-300 z-40", collapsed ? "w-16" : "w-64")}>
