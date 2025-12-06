@@ -104,13 +104,13 @@ export default function DashboardPage() {
 					Derniers tickets
 				</h2>
 				<div className="divide-y divide-gray-100">
-					{stats.lastTickets.map((t: any) => (
-						<a key={t.id} href={`/tickets/${t.id}`} className="flex items-center justify-between py-3 px-1 hover:bg-gray-50 rounded-lg transition-colors">
+					{stats.lastTickets.map((ticket: any) => (
+						<a key={ticket.id} href={`/tickets/${ticket.id}`} className="flex items-center justify-between py-3 px-1 hover:bg-gray-50 rounded-lg transition-colors">
 							<span className="text-sm font-medium text-gray-900">
-								{t.subject}
+								{ticket.subject}
 							</span>
 							<span className="text-xs text-gray-500">
-								{new Date(t.createdAt).toLocaleDateString("fr-FR")}
+								{new Date(ticket.createdAt).toLocaleDateString("fr-FR")}
 							</span>
 						</a>
 					))}

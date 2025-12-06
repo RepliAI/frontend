@@ -62,8 +62,6 @@ export function PreferencesCard({ preferences }: PreferencesCardProps ) {
 						<option value="friendly">Amical</option>
 						<option value="formal">Formel</option>
 					</select>
-
-
 					<p className="text-xs text-gray-500">
 						Définit le ton utilisé par l’IA lors de la génération de réponses.
 					</p>
@@ -99,7 +97,6 @@ export function PreferencesCard({ preferences }: PreferencesCardProps ) {
 							<span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${prefs.autoAiSend ? "left-7" : "left-1"}`}></span>
 						</button>
 					</div>
-
 				</div>
 			</div>
 		</div>

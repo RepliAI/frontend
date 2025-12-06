@@ -1,1 +1,0 @@
-export const periodSelectorOptions = [7, 14, 30, 90];

@@ -9,18 +9,14 @@ import {
   Legend,
 } from "recharts";
 
-const COLORS = {
-  OPEN: "#3b82f6",
-  PENDING: "#f59e0b",
-  RESOLVED: "#10b981",
-};
+import { dashboardColors } from "@/utils/constants";
 
 export function StatusPieChart({ stats }: { stats: any }) {
 
   const data = [
-    { name: "Ouverts", value: stats.open, key: "OPEN", color: COLORS.OPEN },
-    { name: "En attente", value: stats.pending, key: "PENDING", color: COLORS.PENDING },
-    { name: "Résolus", value: stats.resolved, key: "RESOLVED", color: COLORS.RESOLVED },
+    { name: "Ouverts", value: stats.open, key: "OPEN", color: dashboardColors.OPEN },
+    { name: "En attente", value: stats.pending, key: "PENDING", color: dashboardColors.PENDING },
+    { name: "Résolus", value: stats.resolved, key: "RESOLVED", color: dashboardColors.RESOLVED },
   ].filter((d) => d.value > 0);
 
   const chartKey = `${stats.open}-${stats.pending}-${stats.resolved}`;
