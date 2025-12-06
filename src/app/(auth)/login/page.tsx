@@ -18,43 +18,38 @@ export default function AuthPage() {
 	const [success, setSuccess] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 
-	const handleLogin =  async () => {
+	const handleLogin = async () => {
 		try {
-		  await authService.login(email, password);
-		  window.location.href = "/tickets";
-		} catch (err: any) {
-		  throw new Error(err.message || "Impossible de se connecter.");
+			await authService.login(email, password);
+			window.location.href = "/tickets";
+		} catch (err) {
+			throw new Error(err instanceof Error ? err.message : "Impossible de se connecter.");
+		}
+	}
+
+	const handleRegister = async () => {
+		if (password !== passwordConfirm) {
+			throw new  Error('Les mots de passe ne correspondent pas.')
+		}
+		try {
+			await authService.register(email, password);
+			setSuccess('Compte créé avec succès. Vous pouvez vous connecter.');
+			setMode(AuthMode.Login);
+		} catch (err) {
+			throw new Error(err instanceof Error ? err.message : "Impossible de se connecter.");
 		}
 	}
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
 		setSuccess(null);
-
-		if (mode === 'register' && password !== passwordConfirm) {
-			setError('Les mots de passe ne correspondent pas.');
-			return;
-		}
-
 		setLoading(true);
 		try {
 			if (mode === 'login') {
 				await handleLogin();
 			}
 			if (mode === 'register') {
-				const res = await fetch('/api/auth/register', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email, password }),
-				});
-
-				if (!res.ok) {
-					const data = await res.json().catch(() => ({}));
-					throw new Error(data.message || "Impossible de créer le compte.");
-				}
-
-				setSuccess('Compte créé avec succès. Vous pouvez vous connecter.');
-				setMode(AuthMode.Login);
+				await handleRegister();
 				return;
 			}
 
@@ -83,11 +78,11 @@ export default function AuthPage() {
 	const title = mode === 'login' ? 'Connexion' : mode === 'register' ? 'Créer un compte' : 'Mot de passe oublié';
 
 	const subtitle = mode === 'login' ? 'Accédez à votre espace RepliAI.' : mode === 'register' ? 'Rejoignez RepliAI en quelques secondes.' : 'Recevez un lien de réinitialisation.';
-	
+
 	return (
 		<div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-gray-50 text-gray-900">
 			<div className="hidden lg:flex relative items-center justify-center overflow-hidden">
-				<img src="/auth-hero.png" className="absolute inset-0 h-full w-full object-cover brightness-95" alt="Auth Hero"/>
+				<img src="/auth-hero.png" className="absolute inset-0 h-full w-full object-cover brightness-95" alt="Auth Hero" />
 				<div className="absolute inset-0 bg-white/60 backdrop-blur-md" />
 				<div className="relative z-10 max-w-xl px-12 space-y-8">
 					<div className="text-sm font-medium text-gray-700 tracking-wide">
@@ -104,7 +99,7 @@ export default function AuthPage() {
 						et génère des réponses prêtes à envoyer, adaptées à votre ton.
 					</p>
 					<div className="grid grid-cols-2 gap-6 pt-2">
-						{ featureList.map((feature, index) => (
+						{featureList.map((feature, index) => (
 							<Feature key={index} title={feature.title} desc={feature.desc} />
 						))}
 					</div>
@@ -179,7 +174,7 @@ export default function AuthPage() {
 							</>
 						)}
 						<button type="submit" disabled={loading} className="w-full rounded-lg bg-blue-600 text-white py-2 text-sm font-medium hover:bg-blue-700 transition shadow-sm">
-							{loading ? 'Chargement...' : mode === 'login' ? 'Se connecter' : mode === 'register' ? "Créer mon compte" : 'Envoyer le lien' }
+							{loading ? 'Chargement...' : mode === 'login' ? 'Se connecter' : mode === 'register' ? "Créer mon compte" : 'Envoyer le lien'}
 						</button>
 					</form>
 					<p className="mt-6 text-center text-xs text-gray-500">
