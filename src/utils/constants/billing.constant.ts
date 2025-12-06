@@ -1,9 +1,12 @@
-export const plans =  [
+import { Plan } from "@/types";
+
+export const plans: Plan[] =  [
 	{
 		id: "free",
 		name: "Gratuit",
 		price: "0€ / mois",
 		planId: "FREE",
+		highlighted: false,
 		description:
 			"Pour découvrir la plateforme avant de passer à la vitesse supérieure.",
 		features: [
@@ -35,6 +38,7 @@ export const plans =  [
 		name: "Business",
 		price: "69€ / mois",
 		planId: process.env.NEXT_PUBLIC_STRIPE_PRICE_BUSINESS!,
+		highlighted: false,
 		description:
 			"Automatisation complète et support ultra-prioritaire pour équipes exigeantes.",
 		features: [

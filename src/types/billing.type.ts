@@ -10,5 +10,19 @@ export interface BillingCheckoutResponse {
 }
 
 export interface CheckoutUrlResponse {
-    url: null | string
+    url: null | string;
+}
+
+export interface PlanFeatures {
+    label: string;
+    included: boolean;
+}
+export interface Plan {
+    id: string;
+    name: string;
+    price: string;
+    planId: string;
+    description: string;
+    features: PlanFeatures[];
+    highlighted: boolean;
 }
