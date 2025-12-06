@@ -1,30 +1,34 @@
-import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+'use client'
 import { CreditCard } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import BillingPlans from "@/components/modules/billing/BillingPlans";
 import { PageHeader } from "@/components/layout/pageHeader";
+import { Subscription } from "@/types";
+import { billingService } from "@/services/billing.service";
 
-export const revalidate = 0;
 
-export default async function BillingPage() {
-  const token = (await cookies()).get("access_token")?.value;
-  if (!token) return notFound();
+export default function BillingPage() {
 
-  const backend = process.env.BACKEND_URL!;
-  const res = await fetch(`${backend}/billing/subscription`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  });
+    const [loading, setLoading] = useState(true);
+    const [subscription, setSubscription] = useState<Subscription>();
 
-  const subscription = res.ok ? await res.json() : { plan: "free", status: "active", renewAt: null };
-
-  return (
-    <div className="p-6 space-y-10 max-w-5xl mx-auto">
-      <PageHeader icon={<CreditCard size={18} />} title="Abonnement" subtitle="Gérez votre formule, vos paiements et vos informations de facturation."/>
-      <BillingPlans current={subscription} />
-    </div>
-  );
+    const handleGetSubscription = async () => {
+        try {
+            const data = await billingService.getSubscription();
+            setSubscription(data);
+        } finally {
+            setLoading(false);
+        }
+    }
+    useEffect(() => {
+        handleGetSubscription()
+    }, [])
+    
+    return (
+        <div className="p-6 space-y-10 max-w-5xl mx-auto">
+            <PageHeader icon={<CreditCard size={18} />} title="Abonnement" subtitle="Gérez votre formule, vos paiements et vos informations de facturation."/>
+            <BillingPlans current={subscription} />
+        </div>
+    );
 }

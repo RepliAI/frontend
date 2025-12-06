@@ -1,9 +1,22 @@
 "use client";
 
-import Link from "next/link";
 import { Mail } from "lucide-react";
+import { useState } from "react";
+import { gmailService } from "@/services/gmail.service";
 
 export function GmailConnectCard({ connected }: { connected: boolean }) {
+    const [loading, setLoading] = useState(false);
+
+    const handleConnect = async () => {
+        setLoading(true);
+        try {
+            const data = await gmailService.connectGmailAccount();
+            window.location.href = data.url;
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
         <div className="rounded-xl border bg-white p-5 shadow-sm  hover:shadow-md transition cursor-default">
             <div className="flex items-start gap-4">
@@ -18,9 +31,9 @@ export function GmailConnectCard({ connected }: { connected: boolean }) {
                         {connected ? "Votre synchronisation Gmail est active. Les emails entrants créent automatiquement des tickets." : "Connectez Gmail pour que vos emails clients se transforment automatiquement en tickets."}
                     </p>
                     {!connected && (
-                        <Link href="/gmail/connect" className="inline-block mt-4 px-4 py-2 rounded-lg  bg-black text-white text-sm hover:bg-gray-800  transition shadow-sm">
+                        <button onClick={() => handleConnect()} className="inline-block mt-4 px-4 py-2 rounded-lg  bg-black text-white text-sm hover:bg-gray-800  transition shadow-sm">
                             Connecter Gmail
-                        </Link>
+                        </button>
                     )}
                 </div>
             </div>

@@ -19,7 +19,7 @@ export function TicketStatusBadge({ initialStatus }: { initialStatus: string }) 
 
 	useEffect(() => {
 		const handler = (e: any) => {
-			setStatus(e.detail);
+			setStatus(e.detail.status);
 		};
 
 		window.addEventListener("ticket-status-changed", handler);
