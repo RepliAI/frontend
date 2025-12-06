@@ -33,7 +33,6 @@ export function TicketCard({ ticket }: Props) {
 						year: "numeric",
 					})}
 				</p>
-
 				<ChevronRight className="text-gray-400 group-hover:text-gray-800 transition-transform duration-300 group-hover:translate-x-1" size={18}/>
 			</div>
 		</Link>
