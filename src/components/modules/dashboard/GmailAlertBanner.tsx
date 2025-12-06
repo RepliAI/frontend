@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useGmailStatus } from "@/hooks/useGmailStatus";
 import { AlertTriangle, CheckCircle } from "lucide-react";
+
+import { useGmailStatus } from "@/hooks/useGmailStatus";
 
 export function GmailAlertBanner() {
 	const { loading, connected } = useGmailStatus();
@@ -28,7 +29,6 @@ export function GmailAlertBanner() {
 				<div className="flex items-center justify-center h-8 w-8 rounded-full bg-red-100">
 					<AlertTriangle className="text-red-600" size={18} />
 				</div>
-
 				<span className="text-red-700 text-sm font-medium">
 					Gmail n’est pas connecté — aucun ticket ne sera importé.
 				</span>
