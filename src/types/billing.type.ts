@@ -8,3 +8,7 @@ export interface BillingCheckoutResponse {
     url?: string;
     message?: string;
 }
+
+export interface CheckoutUrlResponse {
+    url: null | string
+}

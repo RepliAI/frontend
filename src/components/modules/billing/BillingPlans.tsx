@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { billingService } from "@/services/billing.service";
+
 const plans = [
 	{
 		id: "free",
@@ -54,27 +56,24 @@ const plans = [
 
 export default function BillingPlans({ current }: { current: any }) {
 	const router = useRouter();
-	const [loading, setLoading] = useState<string | null>(null);
+	const [loading, setLoading] = useState<boolean>(false);
 	const [message, setMessage] = useState<string | null>(null);
 
 	const handlePlanChange = async (priceId: string, plan: string) => {
-		setLoading(plan);
+		setLoading(true);
 		setMessage(null);
+		try {
+			const data = await billingService.getCheckoutUrl(priceId, plan);
+			if (data.url) {
+				router.push(data.url);
+				return;
+			}
+		} finally {
 
-		const res = await fetch("/api/billing/checkout", {
-			method: "POST",
-			body: JSON.stringify({ priceId, plan }),
-		});
-
-		const data = await res.json();
-
-		if (data.url) {
-			router.push(data.url);
-			return;
 		}
-
+		
 		setMessage("Votre changement d’offre sera appliqué à la fin de la période en cours.");
-		setLoading(null);
+		setLoading(false);
 		router.refresh();
 	};
 
@@ -119,8 +118,8 @@ export default function BillingPlans({ current }: { current: any }) {
 									</li>
 								))}
 							</ul>
-							<button onClick={() => handlePlanChange(plan.planId, plan.id)} disabled={isCurrent || loading === plan.id} className={`mt-8 w-full py-3 rounded-xl font-medium transition-all ${isCurrent ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-black text-white hover:bg-gray-900"}`}>
-								{isCurrent ? "Plan actuel" : loading === plan.id ? "Chargement…" : "Choisir ce plan"}
+							<button onClick={() => handlePlanChange(plan.planId, plan.id)} disabled={isCurrent || loading } className={`mt-8 w-full py-3 rounded-xl font-medium transition-all ${isCurrent ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-black text-white hover:bg-gray-900"}`}>
+								{isCurrent ? "Plan actuel" : loading  ? "Chargement…" : "Choisir ce plan"}
 							</button>
 						</div>
 					);
