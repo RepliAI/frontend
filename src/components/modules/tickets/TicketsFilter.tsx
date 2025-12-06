@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { Search, Filter } from "lucide-react";
 import clsx from "clsx";
 
+import { statuses } from "@/utils/constants";
+
 export function TicketFilters() {
 	const router = useRouter();
 	const params = useSearchParams();
@@ -28,13 +30,6 @@ export function TicketFilters() {
 
 		router.push("/tickets?" + query.toString());
 	}
-
-	const statuses = [
-		{ label: "Tous", value: "" },
-		{ label: "Ouverts", value: "OPEN" },
-		{ label: "En attente", value: "PENDING" },
-		{ label: "Résolus", value: "RESOLVED" },
-	];
 
 	return (
 		<div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-xl border bg-white/70 backdrop-blur-lg shadow-sm">
