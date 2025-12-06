@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     })
 
     if(!response.ok) {
-        return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
+        return NextResponse.json({ message: "Un problème est survenu lors de l'authentification, veuillez contacter le support client"}, { status: 401 });
     }
     const data = await response.json();
 
@@ -32,5 +32,5 @@ export async function POST(request: NextRequest) {
         path: '/',
       });
     
-      return res;
+    return res;
 }
