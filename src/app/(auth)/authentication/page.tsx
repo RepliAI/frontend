@@ -39,34 +39,28 @@ export default function AuthPage() {
 			throw new Error(err instanceof Error ? err.message : "Impossible de se connecter.");
 		}
 	}
+
+	const handleForgotPassword = async () => {
+		await authService.forgotPassword(email);
+		setSuccess('Un email de réinitialisation a été envoyé.');
+	}
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
 		setSuccess(null);
 		setLoading(true);
+		console.log("🚀 ~ handleSubmit ~ mode:", mode)
 		try {
-			if (mode === 'login') {
-				await handleLogin();
-			}
-			if (mode === 'register') {
-				await handleRegister();
-				return;
-			}
-
-			if (mode === 'forgot') {
-				const res = await fetch('/api/auth/forgot-password', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email }),
-				});
-
-				if (!res.ok) {
-					const data = await res.json().catch(() => ({}));
-					throw new Error(data.message || "Impossible d’envoyer l’email de réinitialisation.");
-				}
-
-				setSuccess('Un email de réinitialisation a été envoyé.');
-				return;
+			switch(mode) {
+				case 'login':
+					await handleLogin();
+				break;
+				case 'register':
+					await handleRegister();
+				break;
+				case 'forgot':
+					await handleForgotPassword();
+				break;
 			}
 		} catch (err: any) {
 			setError(err.message);
@@ -116,7 +110,7 @@ export default function AuthPage() {
 					</header>
 					<div className="flex gap-2 bg-gray-100 p-1 rounded-full text-sm font-medium">
 						{authTabsList.map((tab, index) => (
-							<AuthTab label={tab.label} mode={tab.mode} current={mode} onClick={setMode} />
+							<AuthTab key={index} label={tab.label} mode={tab.mode} current={mode} onClick={setMode} />
 						))}
 					</div>
 					{error && (
