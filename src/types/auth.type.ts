@@ -3,6 +3,10 @@ export interface LoginResponse {
     token?: string;
 }
 
+export interface RegisterResponse {
+    success: boolean
+}
+
 export enum AuthMode {
     Login = 'login',
     Register = 'register',
