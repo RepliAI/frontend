@@ -7,5 +7,10 @@ export const settingsService = {
             method: 'PATCH',
             body: JSON.stringify(prefs)
         })
+    },
+    getGmailEmailStatus(){
+        return apiFetch('/api/gmail/status', {
+            method: 'GET',
+        })
     }
 }
