@@ -18,7 +18,7 @@ export const authService = {
             body: JSON.stringify(body),
         });
     },
-    resetPassword(token:string, password: string) {
+    resetPassword(token: string, password: string) {
         const body = {
             token,
             password
@@ -28,14 +28,18 @@ export const authService = {
             body: JSON.stringify(body),
         });
     },
-    forgotPassword(email:string) {
+    forgotPassword(email: string) {
         const body = {
             email
         }
-        console.log("🚀 ~ body:", body)
         return apiFetch<LoginResponse>("/api/auth/forgot-password", {
             method: "POST",
             body: JSON.stringify(body),
+        });
+    },
+    confirmEmailChange(token: string) {
+        return apiFetch(`/api/auth/confirm-email-change?token=${encodeURIComponent(token)}`, {
+            method: "POST",
         });
     },
 };

@@ -43,7 +43,7 @@ export function Sidebar() {
 
       {!loading && !connected && (
         <div className={clsx("mt-4 p-3 rounded-xl border text-sm font-medium transition shadow-sm cursor-pointer", "bg-red-50 border-red-200 text-red-700", collapsed && "flex justify-center p-2")}>
-          	<Link href="/gmail/connect" className={clsx("flex items-center gap-2", collapsed && "justify-center")}>
+          	<Link href="/settings" className={clsx("flex items-center gap-2", collapsed && "justify-center")}>
          		<Mail size={collapsed ? 20 : 18} className="text-red-600" />
             	{!collapsed && <span>Gmail non connecté</span>}
           	</Link>

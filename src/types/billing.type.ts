@@ -26,3 +26,5 @@ export interface Plan {
     features: PlanFeatures[];
     highlighted: boolean;
 }
+
+export type PlanId = "free" | "pro" | "business";
