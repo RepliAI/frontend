@@ -6,10 +6,12 @@ export function ErrorModal({
   open,
   message,
   onClose,
+  title,
 }: {
   open: boolean;
   message: string;
   onClose: () => void;
+  title: string;
 }) {
   useEffect(() => {
     function handleEsc(e: KeyboardEvent) {
@@ -26,7 +28,7 @@ export function ErrorModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md animate-fade-in">
         <h2 className="text-lg font-semibold mb-4 text-red-600">
-          Erreur Gmail
+          {title}
         </h2>
 
         <p className="text-gray-700 whitespace-pre-line">{message}</p>

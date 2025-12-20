@@ -1,17 +1,19 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Sparkles, PenLine, SlidersHorizontal } from "lucide-react";
 
 import { settingsService } from "@/services/settings.service";
-import { Preferences } from "@/types";
+import { Preferences, Subscription } from "@/types";
+import { billingService } from "@/services/billing.service";
 
 interface PreferencesCardProps{
-	preferences: Preferences
+	preferences: Preferences,
 }
 
 export function PreferencesCard({ preferences }: PreferencesCardProps ) {
 	const [prefs, setPrefs] = useState<Preferences>(preferences);
+	const [subscription, setSubscription] = useState<Subscription>({ plan: "free", status: "active", renewAt: null });
 	const [loading, setLoading] = useState(false);
 	const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -26,7 +28,12 @@ export function PreferencesCard({ preferences }: PreferencesCardProps ) {
 		}
 	}
 
-	function updateSignature(value: string) {
+	const handleFetchSubscription = async () => {
+		const data = await billingService.getSubscription();
+		setSubscription(data);
+	}
+
+	const updateSignature = (value: string) => {
 		const next = { ...prefs, signature: value };
 		setPrefs(next);
 
@@ -37,13 +44,25 @@ export function PreferencesCard({ preferences }: PreferencesCardProps ) {
 		}, 1000);
 	}
 
-	function updateTone(value: string) {
+	const updateTone = (value: string) => {
 		handleUpdatePrefs({ tone: value });
 	}
 
-	function togglePref(key: "autoImport" | "autoAiSend") {
+	const togglePref = (key: "autoImport" | "autoAiSend") => {
 		handleUpdatePrefs({ [key]: !prefs[key] } as any);
 	}
+
+	useEffect(() => {
+		try {
+			setLoading(true);
+			handleFetchSubscription();
+		} catch (error) {
+			console.error('Error fetching subscription:', error);
+		} finally {
+			setLoading(false);
+		}
+	}, []);
+	
 
 	return (
 		<div className="rounded-xl border bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
@@ -75,28 +94,32 @@ export function PreferencesCard({ preferences }: PreferencesCardProps ) {
 					<p className="text-xs text-gray-500">Ajoutée automatiquement aux réponses générées.</p>
 				</div>
 				<div className="space-y-5">
-					<div className="flex items-center justify-between border rounded-lg p-4 hover:bg-gray-50 transition">
-						<div className="text-sm text-gray-700 leading-tight">
-							Import automatique Gmail
-							<p className="text-xs text-gray-500 mt-1">
-								Crée automatiquement des tickets dès réception d'un email.
-							</p>
+					{ subscription.plan !== "free" && (
+						<div className="flex items-center justify-between border rounded-lg p-4 hover:bg-gray-50 transition">
+							<div className="text-sm text-gray-700 leading-tight">
+								Import automatique Gmail
+								<p className="text-xs text-gray-500 mt-1">
+									Crée automatiquement des tickets dès réception d'un email.
+								</p>
+							</div>
+							<button disabled={loading} onClick={() => togglePref("autoImport")} className={`relative w-12 h-6 rounded-full transition-all cursor-pointer ${prefs.autoImport ? "bg-green-600" : "bg-gray-300"}`}>
+								<span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${prefs.autoImport ? "left-7" : "left-1"}`}></span>
+							</button>
 						</div>
-						<button disabled={loading} onClick={() => togglePref("autoImport")} className={`relative w-12 h-6 rounded-full transition-all cursor-pointer ${prefs.autoImport ? "bg-green-600" : "bg-gray-300"}`}>
-							<span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${prefs.autoImport ? "left-7" : "left-1"}`}></span>
-						</button>
-					</div>
-					<div className="flex items-center justify-between border rounded-lg p-4 hover:bg-gray-50 transition">
-						<div className="text-sm text-gray-700 leading-tight">
-							Envoi automatique IA
-							<p className="text-xs text-gray-500 mt-1">
-								Envoie automatiquement les réponses générées par l’IA.
-							</p>
+					)}
+					{ subscription.plan === "business" && (
+						<div className="flex items-center justify-between border rounded-lg p-4 hover:bg-gray-50 transition">
+							<div className="text-sm text-gray-700 leading-tight">
+								Envoi automatique IA
+								<p className="text-xs text-gray-500 mt-1">
+									Envoie automatiquement les réponses générées par l’IA.
+								</p>
+							</div>
+							<button disabled={loading} onClick={() => togglePref("autoAiSend")} className={`relative w-12 h-6 rounded-full transition-all cursor-pointer ${prefs.autoAiSend ? "bg-green-600" : "bg-gray-300"}`}>
+								<span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${prefs.autoAiSend ? "left-7" : "left-1"}`}></span>
+							</button>
 						</div>
-						<button disabled={loading} onClick={() => togglePref("autoAiSend")} className={`relative w-12 h-6 rounded-full transition-all cursor-pointer ${prefs.autoAiSend ? "bg-green-600" : "bg-gray-300"}`}>
-							<span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${prefs.autoAiSend ? "left-7" : "left-1"}`}></span>
-						</button>
-					</div>
+					)}
 				</div>
 			</div>
 		</div>
