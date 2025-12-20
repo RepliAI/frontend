@@ -20,7 +20,7 @@ export default function SettingsPage() {
     <div className="p-6 space-y-10 max-w-3xl mx-auto">
       <PageHeader  icon={<Settings size={18} />}  title="Paramètres"  subtitle="Personnalisez votre expérience et vos préférences IA." />
       <GmailConnectCard connected={connected} />
-      <PreferencesCard preferences={preferences} />
+      <PreferencesCard preferences={preferences}/>
     </div>
   );
 }

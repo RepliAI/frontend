@@ -10,9 +10,10 @@ export async function POST(request: NextRequest) {
         },
         body: JSON.stringify(body),
     })
+    console.log("🚀 ~ POST ~ response:", response)
 
     if(!response.ok) {
-        return NextResponse.json({ message: "Un problème est survenu lors de l'authentification, veuillez contacter le support client"}, { status: 401 });
+        return NextResponse.json({ message: "Un problème est survenu lors de l'authentification, veuillez contacter le support client"}, { status: response.status });
     }
     const data = await response.json();
 

@@ -12,24 +12,31 @@ export function Actions({ id }: { id: string }) {
 	const [loadingMsg, setLoadingMsg] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [textareaValue, setTextareaValue] = useState("");
-	const [showGmailError, setShowGmailError] = useState(false);
-	const [gmailErrorMessage, setGmailErrorMessage] = useState("");
+	const [showError, setShowError] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
 
 	const handleGenerateAIReply = async () => {
 		setLoading(true);
+		setShowError(false);
 		try {
 			const { reply } = await ticketService.generateAIReply(id)
 			setTextareaValue(reply);
-
+			router.refresh();
+		} catch (err) {
+			const message = err instanceof Error 
+				? err.message 
+				: "Une erreur s'est produite lors de la génération de la réponse IA";
+			setErrorMessage(message);
+			setShowError(true);
 		} finally {
 			setLoading(false);
 		}
-		router.refresh();
 	};
 
 	const handleSendMessage = async (e: FormEvent) => {
 		e.preventDefault()
 		setLoadingMsg(true);
+		setShowError(false);
 		try {
 			await ticketService.sendMessage(id, textareaValue);
 			window.dispatchEvent(new CustomEvent("messages-updated"));
@@ -38,18 +45,26 @@ export function Actions({ id }: { id: string }) {
 			);
 	
 			setTextareaValue("");
-			setLoadingMsg(false);
 			router.refresh();
 		} catch(err){
-			setGmailErrorMessage(err instanceof Error ? err.message : "Une erreur s'est produite lors de l'envoi du message")
+			const message = err instanceof Error 
+				? err.message 
+				: "Une erreur s'est produite lors de l'envoi du message";
+			setErrorMessage(message);
+			setShowError(true);
 		} finally {
 			setLoadingMsg(false);
 		}
-
 	}
+	
 	return (
 		<>
-			<ErrorModal open={showGmailError} message={gmailErrorMessage} onClose={() => setShowGmailError(false)}/>
+			<ErrorModal 
+				open={showError} 
+				message={errorMessage} 
+				onClose={() => setShowError(false)}
+				title="Erreur"
+			/>
 			<div className="space-y-4">
 				<form onSubmit={(e) => handleSendMessage(e)} className="space-y-3">
 					<label className="text-sm font-medium text-gray-700">
