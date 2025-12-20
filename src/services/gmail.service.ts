@@ -7,4 +7,9 @@ export const gmailService = {
             method: "GET",
         });
     },
+    importEmails() {
+        return apiFetch<{ imported: number }>(`/api/gmail/import`, {
+            method: "POST",
+        });
+    }
 };
