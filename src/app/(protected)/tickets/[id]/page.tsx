@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Ticket } from "lucide-react";
+import { Ticket, AlertTriangle } from "lucide-react";
 import { useParams } from "next/navigation";
 
 import { ticketService } from "@/services/tickets.service";
@@ -43,11 +43,21 @@ export default function TicketDetailPage() {
 	if (loading) return <div className="p-6">Chargement…</div>;
 	if (!ticket) return <div className="p-6">Ticket introuvable.</div>;
 
+	const hasRiskyMessages = ticket.messages?.some((msg) => msg.isRisky) ?? false;
+
 	return (
 		<div className="max-w-4xl mx-auto p-6 space-y-8">
 			<PageHeader icon={<Ticket size={18} />} title={ticket.subject} subtitle={`Ticket créé le ${new Date(ticket.createdAt).toLocaleDateString("fr-FR")}`} />
 			<div className="bg-white border rounded-xl shadow-sm p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-				<TicketStatusBadge initialStatus={ticket.status} />
+				<div className="flex items-center gap-3 flex-wrap">
+					<TicketStatusBadge initialStatus={ticket.status} />
+					{hasRiskyMessages && (
+						<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border-2 border-red-400 shadow-sm">
+							<AlertTriangle size={14} className="text-red-600" />
+							Ticket à risque
+						</span>
+					)}
+				</div>
 				<TicketStatusActions id={id} currentStatus={ticket.status} />
 			</div>
 			<div className="bg-white border rounded-xl shadow-sm p-6">

@@ -1,5 +1,7 @@
 "use client";
 
+import { AlertTriangle } from "lucide-react";
+
 type MessageRole = "customer" | "agent" | "ai";
 
 type Message = {
@@ -8,6 +10,7 @@ type Message = {
 	to: string;
 	content: string;
 	date: string;
+	isRisky?: boolean;
 };
 
 export function MessageItem({ message }: { message: Message }) {
@@ -36,7 +39,15 @@ export function MessageItem({ message }: { message: Message }) {
 			)}
 
 			<div className={`flex flex-col max-w-[75%] ${isRight ? "items-end" : ""}`}>
-				<span className="text-xs text-gray-500 mb-1">{roleLabel}</span>
+				<div className={`flex items-center gap-2 mb-1 ${isRight ? "justify-end" : ""}`}>
+					<span className="text-xs text-gray-500">{roleLabel}</span>
+					{message.isRisky && (
+						<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-50 text-red-700 border border-red-200">
+							<AlertTriangle size={10} />
+							Message à risque
+						</span>
+					)}
+				</div>
 				<div className={`px-4 py-2 rounded-2xl shadow-sm whitespace-pre-wrap ${bubbleStyle}`}>
 					{message.content}
 				</div>
