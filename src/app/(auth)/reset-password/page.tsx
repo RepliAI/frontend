@@ -53,7 +53,7 @@ export default function ResetPasswordPage() {
                         Réinitialiser votre mot de passe
                     </h1>
                     <p className="text-sm text-gray-600 mt-2 max-w-sm mx-auto">
-                        Définissez un nouveau mot de passe sécurisé pour accéder à RepliAI.
+                        Définissez un nouveau mot de passe sécurisé pour accéder à ReplyAI.
                     </p>
                 </div>
                 {success && (

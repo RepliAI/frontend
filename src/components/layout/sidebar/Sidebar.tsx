@@ -24,7 +24,7 @@ export function Sidebar() {
           R
         </div>
         {!collapsed && (
-          <span className="text-lg font-semibold text-gray-800">RepliAI</span>
+          <span className="text-lg font-semibold text-gray-800">ReplyAI</span>
         )}
       </div>
       <nav className="space-y-1">

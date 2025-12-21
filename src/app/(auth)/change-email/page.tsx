@@ -57,7 +57,7 @@ export default function ChangeEmailPage() {
           </h1>
           <p className="text-sm text-gray-600 max-w-sm mx-auto">
             Cliquez sur le bouton ci-dessous pour finaliser le changement
-            d’adresse email de votre compte RepliAI.
+            d’adresse email de votre compte ReplyAI.
           </p>
         </div>
         {error && (

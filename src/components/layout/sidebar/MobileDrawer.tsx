@@ -46,7 +46,7 @@ export function MobileDrawer({
           >
             <div>
               <div className="flex items-center justify-between mb-4">
-                <span className="font-semibold text-lg">RepliAI</span>
+                <span className="font-semibold text-lg">ReplyAI</span>
                 <button
                   onClick={onClose}
                   className="p-2 rounded-md hover:bg-gray-100"

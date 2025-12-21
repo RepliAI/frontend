@@ -71,7 +71,7 @@ export default function AuthPage() {
 
 	const title = mode === 'login' ? 'Connexion' : mode === 'register' ? 'Créer un compte' : 'Mot de passe oublié';
 
-	const subtitle = mode === 'login' ? 'Accédez à votre espace RepliAI.' : mode === 'register' ? 'Rejoignez RepliAI en quelques secondes.' : 'Recevez un lien de réinitialisation.';
+	const subtitle = mode === 'login' ? 'Accédez à votre espace ReplyAI.' : mode === 'register' ? 'Rejoignez ReplyAI en quelques secondes.' : 'Recevez un lien de réinitialisation.';
 
 	return (
 		<div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-gray-50 text-gray-900">
@@ -80,7 +80,7 @@ export default function AuthPage() {
 				<div className="absolute inset-0 bg-white/60 backdrop-blur-md" />
 				<div className="relative z-10 max-w-xl px-12 space-y-8">
 					<div className="text-sm font-medium text-gray-700 tracking-wide">
-						REPLIAI — SUPPORT CLIENT PAR IA
+						REPLYAI — SUPPORT CLIENT PAR IA
 					</div>
 					<h1 className="text-4xl font-semibold leading-tight">
 						Automatisez vos réponses clients
@@ -89,7 +89,7 @@ export default function AuthPage() {
 						</span>
 					</h1>
 					<p className="text-gray-600 text-base leading-relaxed">
-						RepliAI analyse vos emails Gmail, crée des tickets automatiquement
+						ReplyAI analyse vos emails Gmail, crée des tickets automatiquement
 						et génère des réponses prêtes à envoyer, adaptées à votre ton.
 					</p>
 					<div className="grid grid-cols-2 gap-6 pt-2">
@@ -172,7 +172,7 @@ export default function AuthPage() {
 						</button>
 					</form>
 					<p className="mt-6 text-center text-xs text-gray-500">
-						© {new Date().getFullYear()} RepliAI — Tous droits réservés.
+						© {new Date().getFullYear()} ReplyAI — Tous droits réservés.
 					</p>
 				</div>
 			</div>
