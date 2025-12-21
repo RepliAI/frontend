@@ -1,3 +1,5 @@
+import { handleUnauthorized } from './auth-utils';
+
 export async function apiFetch<T>(
     url: string,
     options: RequestInit = {}
@@ -11,7 +13,12 @@ export async function apiFetch<T>(
     });
 
     if (!response.ok) {
-        const error = await response.json();
+        if (response.status === 401) {
+            await handleUnauthorized();
+            throw new Error('Session expirée. Redirection en cours...');
+        }
+        
+        const error = await response.json().catch(() => ({ message: `HTTP ${response.status}` }));
         throw new Error(error.message || `HTTP ${response.status}`);
     }
 
