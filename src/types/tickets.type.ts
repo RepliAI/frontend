@@ -12,6 +12,7 @@ export interface TicketMessage {
     to: string;
     content: string;
     date: string;
+    isRisky?: boolean;
 }
 
 export interface TicketListResponse {
