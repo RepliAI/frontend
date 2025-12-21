@@ -37,9 +37,12 @@ export function TicketCard({ ticket }: Props) {
 			<div className="relative flex items-center justify-between mt-4">
 				<p className="text-xs text-gray-400">
 					{new Date(ticket.createdAt).toLocaleDateString("fr-FR", {
-						day: "2-digit",
-						month: "2-digit",
-						year: "numeric",
+						 day: "2-digit",
+						 month: "2-digit",
+						 year: "numeric",
+						 hour: "2-digit",
+						 minute: "2-digit",
+						 second: "2-digit",
 					})}
 				</p>
 				<ChevronRight className="text-gray-400 group-hover:text-gray-800 transition-transform duration-300 group-hover:translate-x-1" size={18}/>

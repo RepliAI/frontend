@@ -2,10 +2,13 @@
 
 import { Sidebar } from "../../components/layout/sidebar/Sidebar";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
+import { Toaster } from "react-hot-toast";
+import { useNotifications } from "@/hooks/useNotifications";
 import "@/app/globals.css";
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const { collapsed } = useSidebar();
+  useNotifications();
 
   return (
     <div className="flex h-screen w-full bg-[#F7F8FA]">
@@ -15,6 +18,16 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </main>
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 5000,
+          style: {
+            background: '#fff',
+            color: '#363636',
+          },
+        }}
+      />
     </div>
   );
 }

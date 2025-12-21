@@ -11,6 +11,7 @@ import { PageHeader } from "@/components/layout/pageHeader";
 import { ticketService } from "@/services/tickets.service";
 import { gmailService } from "@/services/gmail.service";
 import { useGmailStatus } from "@/hooks/useGmailStatus";
+import { useTicketUpdates } from "@/hooks/useTicketUpdates";
 import { TicketListResponse } from "@/types";
 
 
@@ -28,6 +29,14 @@ export default function TicketsPage() {
 		setData(tickets);
 		return tickets;
 	}
+
+	useTicketUpdates((eventData) => {
+		const filters = Object.fromEntries(searchParams.entries());
+		ticketService.getTickets(filters).then(setData);
+	}, (ticketId, isRisky) => {
+		const filters = Object.fromEntries(searchParams.entries());
+		ticketService.getTickets(filters).then(setData);
+	});
 
 	const handleManualImport = async () => {
 		setImportLoading(true);

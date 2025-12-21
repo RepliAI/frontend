@@ -1,3 +1,5 @@
+'use client';
+
 let isRedirecting = false;
 
 export async function handleUnauthorized(): Promise<void> {

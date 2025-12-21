@@ -10,6 +10,7 @@ import { TicketStatusBadge } from "@/components/modules/tickets/detail/TicketSta
 import { TicketStatusActions } from "@/components/modules/tickets/detail/TicketStatusAction";
 import { MessageTimeline } from "@/components/modules/tickets/detail/MessageTimeline";
 import { Actions } from "@/components/modules/tickets/detail/Actions";
+import { useTicketUpdates } from "@/hooks/useTicketUpdates";
 import { Ticket as TicketDetailResponse } from "@/types";
 
 export default function TicketDetailPage() {
@@ -33,6 +34,12 @@ export default function TicketDetailPage() {
 	useEffect(() => {
 		handleGetTicket();
 	}, [id]);
+
+	useTicketUpdates(undefined, (ticketId, isRisky) => {
+		if (ticketId === id) {
+			ticketService.getTicketById(id).then(setTicket).catch(() => setTicket(null));
+		}
+	});
 
 	useEffect(() => {
 		const handler = () => handleGetTicket();
