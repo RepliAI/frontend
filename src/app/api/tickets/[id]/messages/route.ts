@@ -1,22 +1,25 @@
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
+
+import { getAuthHeaders, updateCookiesFromResponse } from "@/lib/api-route-helper";
 
 export async function POST(
     req: Request,
     context: { params: Promise<{ id: string }> }
   ) {
     const { id } = await context.params;
-    const token = (await cookies()).get("access_token")?.value;
-
+    const authHeaders = await getAuthHeaders();
     const body = await req.json();
 
     const res = await fetch(`${process.env.BACKEND_URL}/tickets/${id}/messages`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            ...authHeaders,
         },
         body: JSON.stringify(body),
     });
 
-    return new Response(await res.text(), { status: res.status });
+    const text = await res.text();
+    const nextResponse = new NextResponse(text, { status: res.status });
+    return updateCookiesFromResponse(res, nextResponse);
 }

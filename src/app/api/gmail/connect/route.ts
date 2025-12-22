@@ -1,20 +1,17 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+
+import { getAuthHeaders, updateCookiesFromResponse } from "@/lib/api-route-helper";
 
 export async function GET() {
   const backend = process.env.NEXT_PUBLIC_BACKEND_URL!;
-  const cookieStore = await cookies();
-
-  const accessToken = cookieStore.get("access_token")?.value;
+  const authHeaders = await getAuthHeaders();
 
   const res = await fetch(`${backend}/gmail/connect`, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    headers: authHeaders,
   });
 
   const data = await res.json();
-
-  return NextResponse.json(data);
+  const nextResponse = NextResponse.json(data);
+  return updateCookiesFromResponse(res, nextResponse);
 }

@@ -1,11 +1,11 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("access_token")?.value;
+import { getAuthHeaders, updateCookiesFromResponse } from "@/lib/api-route-helper";
 
-    if (!token) {
+export async function GET(req: Request) {
+    const authHeaders = await getAuthHeaders();
+
+    if (!authHeaders.Authorization) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -13,10 +13,11 @@ export async function GET(req: Request) {
     const days = url.searchParams.get("days") || "14";
 
     const res = await fetch(`${process.env.BACKEND_URL}/stats?days=${days}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: authHeaders,
         cache: "no-store",
     });
 
     const data = await res.json();
-    return NextResponse.json(data, { status: res.status });
+    const nextResponse = NextResponse.json(data, { status: res.status });
+    return updateCookiesFromResponse(res, nextResponse);
 }

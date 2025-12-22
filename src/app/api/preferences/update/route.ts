@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+
+import { getAuthHeaders, updateCookiesFromResponse } from "@/lib/api-route-helper";
 
 export async function PATCH(req: Request) {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
+  const authHeaders = await getAuthHeaders();
 
-  if (!accessToken) {
+  if (!authHeaders.Authorization) {
     return NextResponse.json(
       { error: "Not authenticated" },
       { status: 401 }
@@ -18,13 +18,15 @@ export async function PATCH(req: Request) {
   const res = await fetch(`${backend}/preferences`, {
     method: "PATCH",
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      ...authHeaders,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
   });
 
-  return NextResponse.json(await res.json(), {
+  const data = await res.json();
+  const nextResponse = NextResponse.json(data, {
     status: res.status,
   });
+  return updateCookiesFromResponse(res, nextResponse);
 }

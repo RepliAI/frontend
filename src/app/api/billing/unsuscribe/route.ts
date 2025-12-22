@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+
+import { getAuthHeaders, updateCookiesFromResponse } from "@/lib/api-route-helper";
 
 export async function POST() {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("access_token")?.value;
+    const authHeaders = await getAuthHeaders();
 
-    if (!accessToken) {
+    if (!authHeaders.Authorization) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -13,11 +13,12 @@ export async function POST() {
     const res = await fetch(`${backendUrl}/billing/free`, {
         method: "POST",
         headers: {
+            ...authHeaders,
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
         },
     });
 
     const data = await res.json();
-    return NextResponse.json(data, { status: res.status });
+    const nextResponse = NextResponse.json(data, { status: res.status });
+    return updateCookiesFromResponse(res, nextResponse);
 }
