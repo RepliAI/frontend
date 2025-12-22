@@ -1,20 +1,21 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+
+import { getAuthHeaders, updateCookiesFromResponse } from "@/lib/api-route-helper";
 
 export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
     const { id } = await context.params;
-    const cookieStore = await cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const authHeaders = await getAuthHeaders();
 
-    if (!token) {
+    if (!authHeaders.Authorization) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const res = await fetch(`${process.env.BACKEND_URL}/tickets/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: authHeaders,
         cache: "no-store",
     });
 
     const data = await res.json();
-    return NextResponse.json(data, { status: res.status });
+    const nextResponse = NextResponse.json(data, { status: res.status });
+    return updateCookiesFromResponse(res, nextResponse);
 }

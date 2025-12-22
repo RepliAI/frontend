@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+
+import { getAuthHeaders, updateCookiesFromResponse } from "@/lib/api-route-helper";
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
+  const authHeaders = await getAuthHeaders();
 
-  if (!accessToken) {
+  if (!authHeaders.Authorization) {
     return NextResponse.json(
       { connected: false },
       { status: 200 },
@@ -16,22 +16,22 @@ export async function GET() {
 
   const res = await fetch(`${backendUrl}/gmail/status`, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    headers: authHeaders,
     cache: "no-store",
   });
 
   if (!res.ok) {
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       { connected: false },
       { status: res.status },
     );
+    return updateCookiesFromResponse(res, errorResponse);
   }
 
   const data = await res.json();
-  return NextResponse.json(
+  const nextResponse = NextResponse.json(
     { connected: !!data.connected },
     { status: 200 },
   );
+  return updateCookiesFromResponse(res, nextResponse);
 }

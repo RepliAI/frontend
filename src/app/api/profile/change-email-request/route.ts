@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+
+import { getAuthHeaders, updateCookiesFromResponse } from "@/lib/api-route-helper";
 
 const BACKEND = process.env.BACKEND_URL!;
 
 export async function POST(req: Request) {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
+  const authHeaders = await getAuthHeaders();
 
-  if (!accessToken) {
+  if (!authHeaders.Authorization) {
     return NextResponse.json(
       { error: "Not authenticated" },
       { status: 401 }
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   const res = await fetch(`${BACKEND}/profile/change-email-request`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      ...authHeaders,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
@@ -28,12 +28,14 @@ export async function POST(req: Request) {
 
   if (!res.ok) {
     const error = await res.json();
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       { error: error.message || "Failed to request email change" },
       { status: res.status }
     );
+    return updateCookiesFromResponse(res, errorResponse);
   }
 
   const data = await res.json();
-  return NextResponse.json(data, { status: 200 });
+  const nextResponse = NextResponse.json(data, { status: 200 });
+  return updateCookiesFromResponse(res, nextResponse);
 }

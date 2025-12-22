@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+
+import { getAuthHeaders, updateCookiesFromResponse } from "@/lib/api-route-helper";
 
 const BACKEND = process.env.BACKEND_URL!;
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
+  const authHeaders = await getAuthHeaders();
 
-  if (!accessToken) {
+  if (!authHeaders.Authorization) {
     return NextResponse.json(
       { status: null, planId: null, renewAt: null },
       { status: 200 },
@@ -15,42 +15,41 @@ export async function GET() {
   }
 
   const res = await fetch(`${BACKEND}/billing/subscription`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    headers: authHeaders,
     cache: "no-store",
   });
 
   if (!res.ok) {
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       { status: null, planId: null, renewAt: null },
       { status: res.status },
     );
+    return updateCookiesFromResponse(res, errorResponse);
   }
 
   const data = await res.json();
-  return NextResponse.json(data, { status: 200 });
+  const nextResponse = NextResponse.json(data, { status: 200 });
+  return updateCookiesFromResponse(res, nextResponse);
 }
 
 export async function DELETE() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
+  const authHeaders = await getAuthHeaders();
 
-  if (!accessToken) {
+  if (!authHeaders.Authorization) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const res = await fetch(`${BACKEND}/billing/subscription`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    headers: authHeaders,
   });
 
   if (!res.ok) {
     const text = await res.text();
-    return NextResponse.json({ error: text }, { status: res.status });
+    const errorResponse = NextResponse.json({ error: text }, { status: res.status });
+    return updateCookiesFromResponse(res, errorResponse);
   }
 
-  return NextResponse.json({ ok: true }, { status: 200 });
+  const nextResponse = NextResponse.json({ ok: true }, { status: 200 });
+  return updateCookiesFromResponse(res, nextResponse);
 }

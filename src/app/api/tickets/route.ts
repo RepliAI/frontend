@@ -1,19 +1,17 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("access_token")?.value;
+import { getAuthHeaders, updateCookiesFromResponse } from "@/lib/api-route-helper";
 
+export async function GET(req: Request) {
     const url = new URL(req.url);
     const query = url.searchParams.toString();
 
+    const authHeaders = await getAuthHeaders();
     const res = await fetch(`${process.env.BACKEND_URL}/tickets?${query}`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+        headers: authHeaders,
     });
 
     const data = await res.json();
-    return NextResponse.json(data, { status: res.status });
+    const nextResponse = NextResponse.json(data, { status: res.status });
+    return updateCookiesFromResponse(res, nextResponse);
 }
