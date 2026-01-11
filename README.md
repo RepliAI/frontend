@@ -1,137 +1,223 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend ReplyIA
 
-## Getting Started
+Interface utilisateur de l'application ReplyIA, construite avec Next.js et React.
 
-First, run the development server:
+## 🚀 Technologies
+
+- **Framework**: Next.js 16 (App Router)
+- **Langage**: TypeScript
+- **UI Library**: React 19
+- **Styling**: Tailwind CSS 3
+- **Animations**: Framer Motion
+- **Graphiques**: Recharts
+- **Notifications**: React Hot Toast
+- **WebSocket**: Socket.IO Client
+- **Utilitaires**: Lucide React (icônes), clsx
+
+## 📋 Prérequis
+
+- Node.js >= 18
+- npm ou yarn
+
+## 🔧 Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Installer les dépendances
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚙️ Configuration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Créez un fichier `.env.local` à la racine du dossier `frontend` avec les variables suivantes :
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+# Backend API
+BACKEND_URL="http://localhost:3000"
+NEXT_PUBLIC_BACKEND_URL="http://localhost:3000"
 
-## Learn More
+# Stripe (pour les prix des plans)
+NEXT_PUBLIC_STRIPE_PRICE_PRO="price_..."
+NEXT_PUBLIC_STRIPE_PRICE_BUSINESS="price_..."
+```
 
-To learn more about Next.js, take a look at the following resources:
+**Note** : Les variables préfixées par `NEXT_PUBLIC_` sont exposées au client et accessibles dans le navigateur.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🏃 Scripts disponibles
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Développement
+npm run dev          # Lance le serveur de développement sur http://localhost:3001
 
-## Deploy on Vercel
+# Production
+npm run build        # Build de production
+npm run start        # Lance le serveur de production
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Linting
+npm run lint         # Vérifie le code avec ESLint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🏗️ Architecture
 
-## Arborescence
+Le projet utilise l'App Router de Next.js avec une structure organisée :
 
+```
 src/
- ├─ app/
- │   ├─ (auth)/
- │   │   └─ login/
- │   │       └─ page.tsx
- │   │
- │   ├─ (protected)/
- │   │   ├─ layout.tsx         
- │   │   ├─ dashboard/
- │   │   │   └─ page.tsx
- │   │   ├─ tickets/
- │   │   │   ├─ page.tsx
- │   │   │   └─ [id]/
- │   │   │       └─ page.tsx
- │   │   ├─ billing/
- │   │   │   ├─ page.tsx
- │   │   │   └─ success/
- │   │   │       └─ page.tsx
- │   │   │   └─ cancel/
- │   │   │       └─ page.tsx
- │   │   ├─ settings/
- │   │   │   └─ page.tsx
- │   │   └─ profile/
- │   │       └─ page.tsx (plus tard)
- │   │
- │   ├─ api/                   
- │   └─ globals.css
- │
- ├─ components/
- │   ├─ layout/
- │   │   ├─ Sidebar.tsx
- │   │   └─ PageHeader.tsx
- │   │
- │   ├─ ui/
- │   │   ├─ Badge.tsx
- │   │   ├─ Button.tsx
- │   │   ├─ Card.tsx
- │   │   ├─ Input.tsx
- │   │   ├─ Textarea.tsx
- │   │   ├─ Select.tsx
- │   │   └─ ErrorModal.tsx (ou dans ui/)
- │   │
- │   ├─ modules/
- │   │   ├─ dashboard/
- │   │   │   ├─ GmailAlertBanner.tsx
- │   │   │   ├─ StatCard.tsx
- │   │   │   ├─ StatusPieChart.tsx
- │   │   │   ├─ TicketTrendChart.tsx
- │   │   │   └─ PeriodSelector.tsx
- │   │   │
- │   │   ├─ tickets/
- │   │   │   ├─ TicketFilters.tsx
- │   │   │   ├─ TicketList.tsx
- │   │   │   ├─ TicketCard.tsx
- │   │   │   ├─ StatusBadge.tsx
- │   │   │   ├─ MessageTimeline.tsx
- │   │   │   ├─ MessageItem.tsx
- │   │   │   ├─ TicketStatusActions.tsx
- │   │   │   └─ Actions.tsx
- │   │   │
- │   │   ├─ billing/
- │   │   │   ├─ BillingPlans.tsx
- │   │   │   └─ (éventuels composants additionnels)
- │   │   │
- │   │   ├─ settings/
- │   │   │   ├─ GmailConnectCard.tsx
- │   │   │   └─ PreferencesCard.tsx
- │   │   │
- │   │   └─ auth/
- │   │       └─ LoginHero.tsx (si tu veux isoler la partie visuelle)
- │   │
- │   └─ ...
- │
- ├─ hooks/
- │   ├─ useGmailStatus.ts
- │   ├─ useUserPreferences.ts
- │   └─ useSidebar.ts
- │
- ├─ services/
- │   ├─ api/
- │   │   ├─ ticket.service.ts
- │   │   ├─ billing.service.ts
- │   │   ├─ preferences.service.ts
- │   │   └─ gmail.service.ts
- │   ├─ http/
- │   │   └─ api-client.ts
- │   └─ domain/
- │       ├─ ticket.types.ts
- │       ├─ billing.types.ts
- │       └─ user.types.ts
- │
- ├─ lib/
- │   ├─ date.ts
- │   ├─ format.ts
- │   └─ constants.ts
- │
- └─ config/
-     └─ app.config.ts
+├── app/                    # Routes Next.js (App Router)
+│   ├── (auth)/            # Routes publiques (authentification)
+│   │   ├── authentication/
+│   │   ├── reset-password/
+│   │   └── change-email/
+│   ├── (protected)/       # Routes protégées (layout avec sidebar)
+│   │   ├── dashboard/     # Tableau de bord
+│   │   ├── tickets/       # Liste et détail des tickets
+│   │   ├── billing/       # Gestion des abonnements
+│   │   ├── settings/      # Paramètres et préférences
+│   │   └── profile/       # Profil utilisateur
+│   └── api/               # API Routes (proxy vers le backend)
+│       ├── auth/          # Authentification
+│       ├── tickets/       # Tickets
+│       ├── billing/       # Facturation
+│       ├── gmail/         # Intégration Gmail
+│       ├── preferences/   # Préférences utilisateur
+│       └── dashboard/     # Statistiques
+│
+├── components/            # Composants React
+│   ├── layout/           # Sidebar, Header
+│   ├── modules/          # Composants métier par module
+│   │   ├── auth/
+│   │   ├── tickets/
+│   │   ├── billing/
+│   │   ├── dashboard/
+│   │   └── settings/
+│   └── ui/               # Composants UI réutilisables
+│
+├── hooks/                # Hooks React personnalisés
+│   ├── useGmailStatus.tsx
+│   ├── useNotifications.tsx
+│   ├── useTicketUpdates.tsx
+│   └── useUserPreferencies.tsx
+│
+├── services/             # Services de communication API
+│   ├── auth.service.ts
+│   ├── tickets.service.ts
+│   ├── billing.service.ts
+│   ├── gmail.service.ts
+│   └── ...
+│
+├── lib/                  # Utilitaires et helpers
+│   ├── api-client.ts     # Client API générique
+│   ├── api-route-helper.ts
+│   └── auth-utils.ts
+│
+├── types/                # Types TypeScript
+│   ├── auth.type.ts
+│   ├── tickets.type.ts
+│   ├── billing.type.ts
+│   └── ...
+│
+└── utils/                # Utilitaires
+    ├── constants/        # Constantes de l'application
+    ├── date.ts
+    └── query.ts
+```
+
+## 🔐 Authentification
+
+L'authentification utilise des cookies HTTP-only pour stocker les tokens :
+- `access_token` : Token d'accès JWT
+- `refresh_token` : Token de rafraîchissement
+
+Les tokens sont automatiquement rafraîchis via un interceptor qui intercepte les réponses 401.
+
+## 📡 WebSocket
+
+Le frontend se connecte au backend via Socket.IO pour recevoir :
+- Mises à jour de tickets en temps réel
+- Notifications utilisateur
+- Statut de synchronisation Gmail
+
+## 🎨 Styling
+
+Le projet utilise **Tailwind CSS** pour le styling. Les classes utilitaires sont utilisées directement dans les composants.
+
+### Configuration Tailwind
+
+Le fichier `tailwind.config.js` est configuré pour scanner :
+- `./src/app/**/*.{js,ts,jsx,tsx}`
+- `./src/components/**/*.{js,ts,jsx,tsx}`
+
+## 📱 Pages principales
+
+- **`/authentication`** : Page de connexion/inscription
+- **`/dashboard`** : Tableau de bord avec statistiques
+- **`/tickets`** : Liste des tickets avec filtres
+- **`/tickets/[id]`** : Détail d'un ticket avec messages
+- **`/billing`** : Gestion des abonnements Stripe
+- **`/settings`** : Paramètres (Gmail, préférences)
+- **`/profile`** : Profil utilisateur
+
+## 🔄 API Routes
+
+Next.js expose des API Routes qui servent de proxy vers le backend :
+- Gestion automatique des cookies d'authentification
+- Rafraîchissement automatique des tokens
+- Gestion des erreurs centralisée
+
+## 🧪 Développement
+
+### Structure des composants
+
+Les composants sont organisés par module métier dans `components/modules/` :
+- Chaque module contient les composants spécifiques à cette fonctionnalité
+- Les composants UI réutilisables sont dans `components/ui/`
+
+### Hooks personnalisés
+
+- `useGmailStatus` : Vérifie le statut de connexion Gmail
+- `useNotifications` : Gère les notifications WebSocket
+- `useTicketUpdates` : Écoute les mises à jour de tickets
+- `useUserPreferencies` : Gère les préférences utilisateur
+
+## 🚢 Déploiement
+
+### Build de production
+
+```bash
+npm run build
+```
+
+### Variables d'environnement en production
+
+Assurez-vous de configurer toutes les variables d'environnement nécessaires dans votre plateforme de déploiement (Vercel, Netlify, etc.).
+
+### Déploiement sur Vercel
+
+Le projet est optimisé pour Vercel :
+
+```bash
+# Installer Vercel CLI
+npm i -g vercel
+
+# Déployer
+vercel
+```
+
+## 📝 Notes importantes
+
+- Les cookies sont configurés avec `secure: false` en développement et `secure: true` en production
+- Les API Routes utilisent `cache: "no-store"` pour éviter la mise en cache des données sensibles
+- Le frontend écoute sur le port **3001** par défaut (le backend sur 3000)
+- Les routes protégées sont automatiquement redirigées vers `/authentication` si non authentifié
+
+## 🔗 Intégrations
+
+- **Backend NestJS** : Communication via API REST et WebSocket
+- **Stripe** : Gestion des paiements et abonnements
+- **Gmail** : Connexion via OAuth et synchronisation des emails
+
+## 📚 Documentation
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Documentation](https://react.dev)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [Socket.IO Client Documentation](https://socket.io/docs/v4/client-api)
